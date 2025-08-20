@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "name": "money",
+  "workspaces": ["packages/*"],
+  "packageManager": "bun@1.2.20",
+  "scripts": {
+    "build": "turbo run build",
+    "check": "turbo run check",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "format": "biome format . --write",
+    "lint": "biome check . --write",
+    "typecheck": "turbo run typecheck",
+    "clean": "rm -rf node_modules **/node_modules **/dist **/.turbo",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage"
+  },
+  "dependencies": {
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "@types/bun": "^1.2.20",
+    "turbo": "latest",
+    "typescript": "^5.9.2"
+  }
+}
