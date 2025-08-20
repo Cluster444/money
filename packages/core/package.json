@@ -1,0 +1,15 @@
+{
+	"name": "@money/core",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "bun src/index.ts",
+		"build": "echo 'Add build script here'",
+		"test": "bun test",
+		"check": "biome check . --write && biome format . --write",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@money/config": "workspace:*"
+	}
+}
