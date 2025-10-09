@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# Posted transfer from 2 weeks ago, amount 1234, related to schedule
+posted_transfer:
+  state: posted
+  amount: 1234
+  pending_on: <%= 2.weeks.ago.to_date %>
+  posted_on: <%= 2.weeks.ago.to_date %>
+  debit_account: revenue_account
+  credit_account: lazaro_cash
+  schedule: monthly_schedule
+
+# Pending transfer from 1 day ago, amount 2222, no schedule
+pending_transfer:
+  state: pending
+  amount: 2222
+  pending_on: <%= 1.day.ago.to_date %>
+  posted_on:
+  debit_account: lazaro_cash
+  credit_account: expense_account
+  schedule:

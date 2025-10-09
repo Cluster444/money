@@ -16,3 +16,7 @@ test:
 
 production:
   <<: *default
+  recurring:
+    daily_pending_transfers:
+      class: DailyPendingTransfersJob
+      schedule: every day at midnight

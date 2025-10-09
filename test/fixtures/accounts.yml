@@ -1,0 +1,39 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# Lazaro Nixon's accounts
+lazaro_cash:
+  kind: cash
+  name: "Lazaro's Cash Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  user: lazaro_nixon
+
+lazaro_vendor:
+  kind: vendor
+  name: "Lazaro's Vendor Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  user: lazaro_nixon
+
+# Additional accounts for testing
+revenue_account:
+  kind: vendor
+  name: "Revenue Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  user: lazaro_nixon
+
+expense_account:
+  kind: vendor
+  name: "Expense Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  user: lazaro_nixon 

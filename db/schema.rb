@@ -10,7 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_07_180417) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_09_202844) do
+  create_table "accounts", force: :cascade do |t|
+    t.string "kind", null: false
+    t.string "name", null: false
+    t.boolean "active", default: true, null: false
+    t.bigint "debits", default: 0, null: false
+    t.bigint "credits", default: 0, null: false
+    t.json "metadata", default: "{}", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "schedules", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "amount", null: false
+    t.string "period"
+    t.integer "frequency"
+    t.date "starts_on", null: false
+    t.date "ends_on"
+    t.date "last_materialized_on"
+    t.integer "credit_account_id", null: false
+    t.integer "debit_account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["credit_account_id"], name: "index_schedules_on_credit_account_id"
+    t.index ["debit_account_id"], name: "index_schedules_on_debit_account_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -18,6 +47,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_180417) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "transfers", force: :cascade do |t|
+    t.string "state", default: "pending", null: false
+    t.bigint "amount", null: false
+    t.date "pending_on", null: false
+    t.date "posted_on"
+    t.integer "debit_account_id", null: false
+    t.integer "credit_account_id", null: false
+    t.integer "schedule_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["credit_account_id"], name: "index_transfers_on_credit_account_id"
+    t.index ["debit_account_id"], name: "index_transfers_on_debit_account_id"
+    t.index ["schedule_id"], name: "index_transfers_on_schedule_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -30,5 +74,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_180417) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "accounts", "users"
+  add_foreign_key "schedules", "accounts", column: "credit_account_id"
+  add_foreign_key "schedules", "accounts", column: "debit_account_id"
   add_foreign_key "sessions", "users"
+  add_foreign_key "transfers", "accounts", column: "credit_account_id"
+  add_foreign_key "transfers", "accounts", column: "debit_account_id"
+  add_foreign_key "transfers", "schedules"
 end

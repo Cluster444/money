@@ -1,0 +1,48 @@
+class Transfer < ApplicationRecord
+  enum :state, { pending: "pending", posted: "posted" }
+
+  validates :state, presence: true, inclusion: { in: states.values }
+  validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :pending_on, presence: true
+  validates :debit_account, presence: true
+  validates :credit_account, presence: true
+  validates :posted_on, presence: { message: "must be set for posted transfers" }, if: :posted?
+  validate :different_accounts
+
+  belongs_to :debit_account, class_name: "Account"
+  belongs_to :credit_account, class_name: "Account"
+  belongs_to :schedule, optional: true
+
+  # Scopes for filtering by state
+  scope :pending, -> { where(state: :pending) }
+  scope :posted, -> { where(state: :posted) }
+
+  before_destroy :handle_deletion
+
+  def post!
+    return false unless pending?
+
+    transaction do
+      debit_account.increment!(:debits, amount)
+      credit_account.increment!(:credits, amount)
+      self.posted_on = Date.current
+      self.state = :posted
+      save!
+    end
+
+    true
+  end
+
+  private
+
+    def different_accounts
+      errors.add(:credit_account, "must be different from debit account") if debit_account == credit_account
+    end
+
+    def handle_deletion
+      return unless posted?
+      # Reverse the transfer amounts on accounts
+      debit_account.decrement!(:debits, amount)
+      credit_account.decrement!(:credits, amount)
+    end
+end
