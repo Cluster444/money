@@ -36,4 +36,42 @@ expense_account:
   debits: 0
   credits: 0
   metadata: {}
+  user: lazaro_nixon
+
+# Accounts with balances for testing balance calculations
+cash_with_balance:
+  kind: cash
+  name: "Cash Account with Balance"
+  active: true
+  debits: 1000
+  credits: 200
+  metadata: {}
+  user: lazaro_nixon
+
+vendor_with_balance:
+  kind: vendor
+  name: "Vendor Account with Balance"
+  active: true
+  debits: 100
+  credits: 500
+  metadata: {}
+  user: lazaro_nixon
+
+# Additional accounts for scope testing
+extra_cash:
+  kind: cash
+  name: "Extra Cash Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  user: lazaro_nixon
+
+extra_vendor:
+  kind: vendor
+  name: "Extra Vendor Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
   user: lazaro_nixon 

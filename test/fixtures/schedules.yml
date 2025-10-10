@@ -83,3 +83,39 @@ daily_schedule_for_today:
   last_materialized_on: <%= 1.day.ago.to_date %>
   credit_account: lazaro_cash
   debit_account: revenue_account
+
+# Large payment schedule for testing negative balance scenarios
+large_payment_schedule:
+  name: "Large payment"
+  amount: 1000
+  period:
+  frequency:
+  starts_on: <%= 5.days.from_now.to_date %>
+  ends_on:
+  last_materialized_on:
+  credit_account: lazaro_cash
+  debit_account: expense_account
+
+# Small daily schedule for testing same-day scenarios
+today_payment_schedule:
+  name: "Today's payment"
+  amount: 50
+  period:
+  frequency:
+  starts_on: <%= Date.today %>
+  ends_on:
+  last_materialized_on:
+  credit_account: lazaro_cash
+  debit_account: expense_account
+
+# Weekly schedule for testing weekly calculations
+weekly_payment_schedule:
+  name: "Weekly payment"
+  amount: 25
+  period: week
+  frequency: 1
+  starts_on: <%= Date.today %>
+  ends_on: <%= 2.weeks.from_now.to_date %>
+  last_materialized_on:
+  credit_account: lazaro_cash
+  debit_account: expense_account
