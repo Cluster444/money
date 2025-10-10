@@ -17,6 +17,7 @@ class Transfer < ApplicationRecord
   scope :pending, -> { where(state: :pending) }
   scope :posted, -> { where(state: :posted) }
 
+  before_update :prevent_posted_update
   before_destroy :handle_deletion
 
   def post!
@@ -34,6 +35,16 @@ class Transfer < ApplicationRecord
   end
 
   private
+
+    def prevent_posted_update
+      return unless posted?
+      return unless changed?
+      # Allow the state change from pending to posted during posting
+      return if state_changed? && state_was == "pending" && state == "posted"
+
+      errors.add(:base, "Posted transfers cannot be modified")
+      throw(:abort)
+    end
 
     def different_accounts
       errors.add(:credit_account, "must be different from debit account") if debit_account == credit_account

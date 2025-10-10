@@ -164,6 +164,62 @@ class TransferTest < ActiveSupport::TestCase
     assert_nil @pending_transfer.schedule
   end
 
+  # Immutability tests
+  test "should not allow updating posted transfer" do
+    original_amount = @posted_transfer.amount
+    @posted_transfer.amount = 9999
+
+    assert_not @posted_transfer.save
+    assert_includes @posted_transfer.errors[:base], "Posted transfers cannot be modified"
+
+    @posted_transfer.reload
+    assert_equal original_amount, @posted_transfer.amount
+  end
+
+  test "should not allow updating posted transfer attributes" do
+    original_pending_on = @posted_transfer.pending_on
+    original_debit_account = @posted_transfer.debit_account
+
+    @posted_transfer.pending_on = Date.current
+    @posted_transfer.debit_account = accounts(:expense_account)
+
+    assert_not @posted_transfer.save
+    assert_includes @posted_transfer.errors[:base], "Posted transfers cannot be modified"
+
+    @posted_transfer.reload
+    assert_equal original_pending_on, @posted_transfer.pending_on
+    assert_equal original_debit_account, @posted_transfer.debit_account
+  end
+
+  test "should allow updating pending transfer" do
+    original_amount = @pending_transfer.amount
+    @pending_transfer.amount = 3333
+
+    assert @pending_transfer.save
+    @pending_transfer.reload
+    assert_equal 3333, @pending_transfer.amount
+  end
+
+  test "should allow destroying posted transfer with balance reversal" do
+    # Posted transfers can be destroyed but balances are reversed
+    initial_debits = @posted_transfer.debit_account.debits
+    initial_credits = @posted_transfer.credit_account.credits
+
+    assert @posted_transfer.destroy
+    assert_not Transfer.exists?(@posted_transfer.id)
+
+    @posted_transfer.debit_account.reload
+    @posted_transfer.credit_account.reload
+
+    assert_equal initial_debits - @posted_transfer.amount, @posted_transfer.debit_account.debits
+    assert_equal initial_credits - @posted_transfer.amount, @posted_transfer.credit_account.credits
+  end
+
+  test "should allow destroying pending transfer" do
+    assert @pending_transfer.destroy
+    assert_not Transfer.exists?(@pending_transfer.id)
+  end
+
   # post! method tests
   test "post! should transition pending transfer to posted" do
     assert @pending_transfer.pending?
