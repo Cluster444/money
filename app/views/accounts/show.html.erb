@@ -1,0 +1,210 @@
+<div class="page">
+  <div class="page__header">
+    <div class="accounts-show__title">
+      <h1><%= @account.name %></h1>
+      <span class="accounts-show__kind accounts-show__kind--<%= @account.kind %>"><%= @account.kind.humanize %></span>
+    </div>
+    <div class="accounts-show__actions">
+      <%= back_button accounts_path, "Back to Accounts" %>
+      <%= edit_button edit_account_path(@account) %>
+    </div>
+  </div>
+
+  <div class="page__content">
+    <div class="page__card">
+      <div class="accounts-show__status">
+        <span class="accounts-show__status-label">Status:</span>
+        <span
+          class="
+            accounts-show__status-value <%= @account.active ? 'status-active' : 'status-inactive' %>
+          "
+        >
+          <%= @account.active ? "Active" : "Inactive" %>
+        </span>
+      </div>
+
+      <div class="accounts-show__balances">
+        <div class="accounts-show__balance">
+          <div class="accounts-show__balance-label"><%= @account.credit_card? ? "Amount Owed" : "Posted Balance" %></div>
+          <div class="accounts-show__balance-value">
+            <%= link_to number_to_currency(@account.posted_balance / 100.0), 
+                        account_adjustments_path(@account), 
+                        class: "accounts-show__balance-link",
+                        title: "View adjustments for this account" %>
+          </div>
+        </div>
+        <div class="accounts-show__balance">
+          <div class="accounts-show__balance-label">Pending Transfers</div>
+          <div class="accounts-show__balance-value"><%= number_to_currency(@account.pending_balance / 100.0) %></div>
+        </div>
+        <div class="accounts-show__balance">
+          <div class="accounts-show__balance-label">Planned Transfers (30d)</div>
+          <div class="accounts-show__balance-value"><%= number_to_currency(@account.planned_balance(Date.current + 30.days) / 100.0) %></div>
+        </div>
+      </div>
+
+      <% if @account.credit_card? && (@account.due_day || @account.statement_day) %>
+        <div class="accounts-show__metadata">
+          <h3>Credit Card Information</h3>
+          <div class="accounts-show__metadata-grid">
+            <% if @account.statement_day %>
+              <div class="accounts-show__metadata-item">
+                <span class="accounts-show__metadata-key">Statement Day:</span>
+                <span class="accounts-show__metadata-value"><%= @account.statement_day %></span>
+              </div>
+            <% end %>
+            <% if @account.due_day %>
+              <div class="accounts-show__metadata-item">
+                <span class="accounts-show__metadata-key">Due Day:</span>
+                <span class="accounts-show__metadata-value"><%= @account.due_day %></span>
+              </div>
+            <% end %>
+            <% if @account.next_statement_date %>
+              <div class="accounts-show__metadata-item">
+                <span class="accounts-show__metadata-key">Next Statement:</span>
+                <span class="accounts-show__metadata-value"><%= @account.next_statement_date.strftime("%B %d, %Y") %></span>
+              </div>
+            <% end %>
+            <% if @account.next_due_date %>
+              <div class="accounts-show__metadata-item">
+                <span class="accounts-show__metadata-key">Next Due Date:</span>
+                <span class="accounts-show__metadata-value"><%= @account.next_due_date.strftime("%B %d, %Y") %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @account.metadata.present? && @account.metadata != {} && !@account.credit_card? %>
+        <div class="accounts-show__metadata">
+          <h3>Additional Information</h3>
+          <div class="accounts-show__metadata-grid">
+            <% @account.metadata.each do |key, value| %>
+              <div class="accounts-show__metadata-item">
+                <span class="accounts-show__metadata-key"><%= key.humanize %>:</span>
+                <span class="accounts-show__metadata-value"><%= value %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @debit_schedules.any? %>
+      <div class="page__card">
+        <h2>Debit Schedules</h2>
+        <div class="page__list">
+          <% @debit_schedules.each do |schedule| %>
+            <div class="accounts-show__schedule-card">
+              <div class="accounts-show__schedule-header">
+                <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
+                <% if schedule.amount.present? %>
+                  <span class="accounts-show__schedule-amount"><%= number_to_currency(schedule.amount / 100.0) %></span>
+                <% end %>
+              </div>
+              <div class="accounts-show__schedule-details">
+                <div class="accounts-show__schedule-row">
+                  <div>
+                    <div class="accounts-show__schedule-detail">
+                      <span class="accounts-show__schedule-label">To:</span>
+                      <span class="accounts-show__schedule-value"><%= schedule.credit_account.name %></span>
+                    </div>
+                  </div>
+                  <div class="accounts-show__schedule-dates">
+                    <% if schedule.last_materialized_on.present? %>
+                      <div class="accounts-show__schedule-detail">
+                        <span class="accounts-show__schedule-label">Last:</span>
+                        <span class="accounts-show__schedule-value"><%= schedule.last_materialized_on.strftime("%b %-d") %></span>
+                      </div>
+                    <% end %>
+                    <% if schedule.next_materialized_on.present? %>
+                      <div class="accounts-show__schedule-detail">
+                        <span class="accounts-show__schedule-label">Next:</span>
+                        <span class="accounts-show__schedule-value"><%= schedule.next_materialized_on.strftime("%b %-d") %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                  <% if schedule.period.present? %>
+                    <div class="accounts-show__schedule-row-last">
+                      <div class="accounts-show__schedule-detail">
+                        <span class="accounts-show__schedule-label">Frequency:</span>
+                        <span class="accounts-show__schedule-value">
+                          <%= format_schedule_frequency(schedule) %>
+                        </span>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+                <% if schedule.ends_on.present? %>
+                  <div class="accounts-show__schedule-detail">
+                    <span class="accounts-show__schedule-label">Ends:</span>
+                    <span class="accounts-show__schedule-value"><%= schedule.ends_on.strftime("%B %d, %Y") %></span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @credit_schedules.any? %>
+      <div class="page__card">
+        <h2>Credit Schedules</h2>
+        <div class="page__list">
+          <% @credit_schedules.each do |schedule| %>
+            <div class="accounts-show__schedule-card">
+              <div class="accounts-show__schedule-header">
+                <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
+                <% if schedule.amount.present? %>
+                  <span class="accounts-show__schedule-amount"><%= number_to_currency(schedule.amount / 100.0) %></span>
+                <% end %>
+              </div>
+              <div class="accounts-show__schedule-details">
+                <div class="accounts-show__schedule-row">
+                  <div>
+                    <div class="accounts-show__schedule-detail">
+                      <span class="accounts-show__schedule-label">From:</span>
+                      <span class="accounts-show__schedule-value"><%= schedule.debit_account.name %></span>
+                    </div>
+                  </div>
+                  <div class="accounts-show__schedule-dates">
+                    <% if schedule.last_materialized_on.present? %>
+                      <div class="accounts-show__schedule-detail">
+                        <span class="accounts-show__schedule-label">Last:</span>
+                        <span class="accounts-show__schedule-value"><%= schedule.last_materialized_on.strftime("%b %-d") %></span>
+                      </div>
+                    <% end %>
+                    <% if schedule.next_materialized_on.present? %>
+                      <div class="accounts-show__schedule-detail">
+                        <span class="accounts-show__schedule-label">Next:</span>
+                        <span class="accounts-show__schedule-value"><%= schedule.next_materialized_on.strftime("%b %-d") %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                  <% if schedule.period.present? %>
+                    <div class="accounts-show__schedule-row-last">
+                      <div class="accounts-show__schedule-detail">
+                        <span class="accounts-show__schedule-label">Frequency:</span>
+                        <span class="accounts-show__schedule-value">
+                          <%= format_schedule_frequency(schedule) %>
+                        </span>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+                <% if schedule.ends_on.present? %>
+                  <div class="accounts-show__schedule-detail">
+                    <span class="accounts-show__schedule-label">Ends:</span>
+                    <span class="accounts-show__schedule-value"><%= schedule.ends_on.strftime("%B %d, %Y") %></span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+

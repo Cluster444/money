@@ -1,0 +1,23 @@
+<div class="page">
+  <div class="page__header">
+    <h1>New Adjustment for <%= @account.name %></h1>
+  </div>
+
+  <div class="page__content">
+    <div class="page__card">
+      <p class="text-muted">
+        Adjustments allow you to forcefully change an account's balance without creating a transfer. 
+        This breaks double-entry accounting and should be used sparingly.
+      </p>
+
+      <%= form_with(model: [@account, @adjustment], local: true, class: "form") do |form| %>
+        <%= render "form", form: form %>
+        
+        <div class="form__actions">
+          <%= form.submit "Create Adjustment", class: "btn btn--primary" %>
+          <%= cancel_button @account %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

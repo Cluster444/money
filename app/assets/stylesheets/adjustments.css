@@ -1,0 +1,97 @@
+/* Adjustments index page styles */
+
+.adjustments-index {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page__header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.adjustments-index__card {
+  background: var(--bg-3);
+  border: 1px solid var(--border-1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.adjustments-index__card:hover {
+  border-color: var(--border-2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.adjustments-index__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.adjustments-index__card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.adjustments-index__card-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.adjustments-index__credit {
+  color: #dc3545;
+}
+
+.adjustments-index__debit {
+  color: #28a745;
+}
+
+.adjustments-index__card-date {
+  font-size: 0.85rem;
+  color: var(--font-2);
+  font-weight: 400;
+}
+
+.adjustments-index__card-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.adjustments-index__card-body {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-1);
+}
+
+.adjustments-index__note {
+  font-size: 0.9rem;
+  color: var(--font-1);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Small button variants */
+.btn--small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  min-height: 1.75rem;
+}
+
+.btn--danger {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.btn--danger:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+}

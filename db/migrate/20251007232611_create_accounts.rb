@@ -6,7 +6,7 @@ class CreateAccounts < ActiveRecord::Migration[8.0]
       t.boolean :active, null: false, default: true
       t.bigint :debits, null: false, default: 0
       t.bigint :credits, null: false, default: 0
-      t.json :metadata, null: false, default: "{}"
+      t.json :metadata, null: false, default: {}
 
       t.timestamps
     end

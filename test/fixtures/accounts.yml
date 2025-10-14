@@ -74,4 +74,13 @@ extra_vendor:
   debits: 0
   credits: 0
   metadata: {}
+  user: lazaro_nixon
+
+lazaro_credit_card:
+  kind: credit_card
+  name: "Lazaro's Credit Card"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: { "due_day": 15, "statement_day": 1 }
   user: lazaro_nixon 

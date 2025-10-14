@@ -1,0 +1,22 @@
+<% if @adjustment.errors.any? %>
+  <div class="form__errors">
+    <h4><%= pluralize(@adjustment.errors.count, "error") %> prohibited this adjustment from being saved:</h4>
+    <ul>
+      <% @adjustment.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="form__group">
+  <%= form.label :note, class: "form__label" %>
+  <%= form.text_area :note, class: "form__input", rows: 3, placeholder: "Explain why this adjustment is being made..." %>
+</div>
+
+<div class="form__group">
+  <%= form.label :target_balance, "Target Balance ($)", class: "form__label" %>
+  <%= money_field(form, :target_balance, class: "form__input", 
+                  placeholder: "Enter the correct balance") %>
+  <small class="form__help">Current balance: <%= number_to_currency(@account.posted_balance / 100.0) %>. Enter what the balance should be and the system will create the appropriate adjustment.</small>
+</div>

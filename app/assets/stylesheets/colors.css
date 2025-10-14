@@ -1,0 +1,9 @@
+:root {
+  --bg-1: oklch(15% 0.01 50);
+  --bg-2: oklch(20% 0.015 50);
+  --bg-3: oklch(25% 0.02 50);
+  --font-1: oklch(95% 0.01 50);
+  --font-2: oklch(70% 0.01 50);
+  --border-1: oklch(35% 0.01 50);
+  --border-2: oklch(45% 0.01 50);
+}

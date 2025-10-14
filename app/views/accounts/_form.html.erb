@@ -1,0 +1,73 @@
+<% if @account.errors.any? %>
+  <div class="form__errors">
+    <h4><%= pluralize(@account.errors.count, "error") %> prohibited this account from being saved:</h4>
+    <ul>
+      <% @account.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="form__group">
+  <%= form.label :name, class: "form__label" %>
+  <%= form.text_field :name, class: "form__input", placeholder: "e.g., Checking Account, Cash Wallet" %>
+</div>
+
+<div class="form__group">
+  <%= form.label :kind, class: "form__label" %>
+  <%= form.select :kind, options_for_select(Account.kinds.keys.map { |k| [k.humanize, k] }, @account.kind), {}, class: "form__select" %>
+</div>
+
+<div id="credit-card-fields" style="display: none;">
+  <div class="form__group">
+    <%= form.label :due_day, "Due Day (1-31)", class: "form__label" %>
+    <%= form.number_field :due_day, in: 1..31, class: "form__input", placeholder: "e.g., 15" %>
+  </div>
+
+  <div class="form__group">
+    <%= form.label :statement_day, "Statement Day (1-31)", class: "form__label" %>
+    <%= form.number_field :statement_day, in: 1..31, class: "form__input", placeholder: "e.g., 1" %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const kindSelect = document.querySelector('#account_kind');
+    const creditCardFields = document.querySelector('#credit-card-fields');
+    const dueDayInput = document.querySelector('#account_due_day');
+    const statementDayInput = document.querySelector('#account_statement_day');
+    
+    function toggleCreditCardFields() {
+      if (kindSelect.value === 'credit_card') {
+        creditCardFields.style.display = 'block';
+      } else {
+        creditCardFields.style.display = 'none';
+      }
+    }
+    
+    // Set initial values from metadata if available
+    <% if @account.credit_card? %>
+      dueDayInput.value = '<%= @account.due_day %>';
+      statementDayInput.value = '<%= @account.statement_day %>';
+    <% end %>
+    
+    kindSelect.addEventListener('change', toggleCreditCardFields);
+    toggleCreditCardFields();
+    
+    // Handle form submission to include metadata
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+      if (kindSelect.value === 'credit_card') {
+        const metadataInput = document.createElement('input');
+        metadataInput.type = 'hidden';
+        metadataInput.name = 'account[metadata]';
+        metadataInput.value = JSON.stringify({
+          due_day: dueDayInput.value,
+          statement_day: statementDayInput.value
+        });
+        form.appendChild(metadataInput);
+      }
+    });
+  });
+</script>

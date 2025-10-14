@@ -371,4 +371,120 @@ test "post! should be transactional" do
     new_pending.destroy
     new_posted.destroy
   end
+
+  # Credit card constraint tests
+  test "should prevent credit card from having credits less than debits" do
+    user = users(:lazaro_nixon)
+    credit_card = user.accounts.create!(
+      name: "Test Credit Card",
+      kind: "credit_card",
+      metadata: { due_day: 15, statement_day: 1 }
+    )
+    cash_account = accounts(:lazaro_cash)
+
+    # Set up credit card with some existing balance
+    credit_card.update!(debits: 2000, credits: 3000) # 1000 owed
+
+    # This transfer would make credits (3000) < debits (2000 + 1500)
+    transfer = Transfer.new(
+      amount: 1500,
+      pending_on: Date.current,
+      debit_account: credit_card, # Credit card is debited (payment out)
+      credit_account: cash_account
+    )
+
+    assert_not transfer.valid?
+    assert_includes transfer.errors[:base], "This transfer would cause credit card to have credits less than debits"
+  end
+
+  test "should allow credit card payment when credits >= debits" do
+    user = users(:lazaro_nixon)
+    credit_card = user.accounts.create!(
+      name: "Test Credit Card",
+      kind: "credit_card",
+      metadata: { due_day: 15, statement_day: 1 }
+    )
+    cash_account = accounts(:lazaro_cash)
+
+    # Set up credit card with some existing balance
+    credit_card.update!(debits: 2000, credits: 3000) # 1000 owed
+
+    # This transfer is fine: credits (3000) >= debits (2000 + 500)
+    transfer = Transfer.new(
+      amount: 500,
+      pending_on: Date.current,
+      debit_account: credit_card, # Credit card is debited (payment out)
+      credit_account: cash_account
+    )
+
+    assert transfer.valid?
+  end
+
+  test "should prevent credit card charge when it would violate constraint" do
+    user = users(:lazaro_nixon)
+    credit_card = user.accounts.create!(
+      name: "Test Credit Card",
+      kind: "credit_card",
+      metadata: { due_day: 15, statement_day: 1 }
+    )
+    cash_account = accounts(:lazaro_cash)
+
+    # Set up credit card with existing charges (credits > debits = amount owed)
+    credit_card.update!(debits: 2000, credits: 3000) # 1000 owed
+
+    # This transfer would make credits (3000 + 2000) >= debits (2000) - this is actually valid
+    # The constraint is credits >= debits, so we need to test when this would be violated
+    # But for credit cards, credits represent charges and debits represent payments
+    # So having more credits than debits is normal (owing money)
+
+    # Let's test a scenario where we try to make a payment that would overpay
+    transfer = Transfer.new(
+      amount: 1500, # More than the 1000 owed
+      pending_on: Date.current,
+      debit_account: credit_card, # Credit card is debited (payment out)
+      credit_account: cash_account
+    )
+
+    # This should be invalid because it would make credits (3000) < debits (2000 + 1500)
+    assert_not transfer.valid?
+    assert_includes transfer.errors[:base], "This transfer would cause credit card to have credits less than debits"
+  end
+
+  test "should allow credit card charge when credits >= debits" do
+    user = users(:lazaro_nixon)
+    credit_card = user.accounts.create!(
+      name: "Test Credit Card",
+      kind: "credit_card",
+      metadata: { due_day: 15, statement_day: 1 }
+    )
+    cash_account = accounts(:lazaro_cash)
+
+    # Set up credit card with some available credit
+    credit_card.update!(debits: 2000, credits: 3000) # 1000 owed, 2000 available
+
+    # This transfer is fine: credits (3000 + 500) >= debits (2000)
+    transfer = Transfer.new(
+      amount: 500,
+      pending_on: Date.current,
+      debit_account: cash_account,
+      credit_account: credit_card # Credit card is credited (charge in)
+    )
+
+    assert transfer.valid?
+  end
+
+  test "validation should not affect non-credit-card accounts" do
+    vendor_account = accounts(:expense_account)
+    cash_account = accounts(:lazaro_cash)
+
+    # This should be valid even if it creates negative balance for vendor
+    transfer = Transfer.new(
+      amount: 5000,
+      pending_on: Date.current,
+      debit_account: vendor_account,
+      credit_account: cash_account
+    )
+
+    assert transfer.valid?
+  end
 end

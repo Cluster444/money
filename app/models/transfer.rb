@@ -8,6 +8,7 @@ class Transfer < ApplicationRecord
   validates :credit_account, presence: true
   validates :posted_on, presence: { message: "must be set for posted transfers" }, if: :posted?
   validate :different_accounts
+  validate :credit_card_balance_constraint
 
   belongs_to :debit_account, class_name: "Account"
   belongs_to :credit_account, class_name: "Account"
@@ -48,6 +49,27 @@ class Transfer < ApplicationRecord
 
     def different_accounts
       errors.add(:credit_account, "must be different from debit account") if debit_account == credit_account
+    end
+
+    def credit_card_balance_constraint
+      return unless pending? && (debit_account_changed? || credit_account_changed? || amount_changed?)
+
+      # Check if this would violate credit card constraint after posting
+      if debit_account&.credit_card?
+        new_debits = (debit_account.debits || 0) + amount
+        new_credits = debit_account.credits || 0
+        if new_credits < new_debits
+          errors.add(:base, "This transfer would cause credit card to have credits less than debits")
+        end
+      end
+
+      if credit_account&.credit_card?
+        new_credits = (credit_account.credits || 0) + amount
+        new_debits = credit_account.debits || 0
+        if new_credits < new_debits
+          errors.add(:base, "This transfer would cause credit card to have credits less than debits")
+        end
+      end
     end
 
     def handle_deletion

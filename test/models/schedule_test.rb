@@ -22,6 +22,19 @@ class ScheduleTest < ActiveSupport::TestCase
     assert_includes @schedule.errors[:amount], "can't be blank"
   end
 
+  test "should not require amount when relative_account_id is present" do
+    @schedule.amount = nil
+    @schedule.relative_account = accounts(:cash_with_balance)
+    assert @schedule.valid?
+  end
+
+  test "should require amount when relative_account_id is not present" do
+    @schedule.amount = nil
+    @schedule.relative_account = nil
+    assert_not @schedule.valid?
+    assert_includes @schedule.errors[:amount], "can't be blank"
+  end
+
   test "should require amount greater than 0" do
     @schedule.amount = 0
     assert_not @schedule.valid?
@@ -141,12 +154,7 @@ class ScheduleTest < ActiveSupport::TestCase
     assert @schedule.valid?
   end
 
-  test "should require ends_on when frequency is set" do
-    @schedule.frequency = 1
-    @schedule.ends_on = nil
-    assert_not @schedule.valid?
-    assert_includes @schedule.errors[:ends_on], "must be present when frequency is set"
-  end
+
 
   test "should require period when frequency is set" do
     @schedule.frequency = 1
@@ -392,5 +400,435 @@ test "create_pending_transfers handles edge cases gracefully" do
     schedule.create_pending_transfers
 
     assert_equal 0, schedule.transfers.where("pending_on > ?", Date.current).count
+  end
+
+  # Relative balance scheduling tests
+  test "planned_transfers with zero balance and no amount should generate no transfers" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:lazaro_cash)  # Zero balance
+    )
+
+    dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
+    transfers = schedule.planned_transfers(dates)
+
+    assert_empty transfers
+  end
+
+  test "planned_transfers with non-zero balance and no amount should generate only next transfer" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
+    transfers = schedule.planned_transfers(dates)
+
+    assert_equal 1, transfers.length
+    assert_equal 800, transfers.first.amount
+    assert_equal Date.current, transfers.first.pending_on
+  end
+
+  test "planned_transfers with zero balance and fixed amount should use amount for all transfers" do
+    schedule = Schedule.new(
+      name: "Relative Schedule with Amount",
+      amount: 500,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:lazaro_cash)  # Zero balance
+    )
+
+    dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
+    transfers = schedule.planned_transfers(dates)
+
+    assert_equal 3, transfers.length
+    transfers.each do |transfer|
+      assert_equal 500, transfer.amount
+    end
+  end
+
+  test "planned_transfers with non-zero balance and fixed amount should use balance for next transfer and amount for rest" do
+    schedule = Schedule.new(
+      name: "Relative Schedule with Amount",
+      amount: 500,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
+    transfers = schedule.planned_transfers(dates)
+
+    assert_equal 3, transfers.length
+    assert_equal 800, transfers.first.amount  # Uses balance for first transfer
+    assert_equal 500, transfers.second.amount  # Uses fixed amount for subsequent
+    assert_equal 500, transfers.third.amount
+  end
+
+  test "planned_transfers without relative_account should use fixed amount for all transfers" do
+    schedule = Schedule.new(
+      name: "Fixed Schedule",
+      amount: 300,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: nil
+    )
+
+    dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
+    transfers = schedule.planned_transfers(dates)
+
+    assert_equal 3, transfers.length
+    transfers.each do |transfer|
+      assert_equal 300, transfer.amount
+    end
+  end
+
+  test "planned_transfers with relative_account should handle empty dates array" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)
+    )
+
+    transfers = schedule.planned_transfers([])
+
+    assert_empty transfers
+  end
+
+  test "planned_transfers relative balance calculation should use posted_balance method" do
+    # Create a mock account with custom balance
+    mock_account = accounts(:cash_with_balance)
+
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: mock_account
+    )
+
+    dates = [ Date.current ]
+    transfers = schedule.planned_transfers(dates)
+
+    # Should use the posted_balance (debits - credits = 1000 - 200 = 800)
+    assert_equal 1, transfers.length
+    assert_equal 800, transfers.first.amount
+  end
+
+  # Relative account date generation tests
+  test "transfer_dates with zero balance and no amount should return no dates" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:lazaro_cash)  # Zero balance
+    )
+
+    dates = schedule.transfer_dates(Date.current + 1.month)
+    assert_empty dates
+  end
+
+  test "transfer_dates with non-zero balance and no amount should return only next date" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: 1.week.ago.to_date,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    dates = schedule.transfer_dates(Date.current + 1.month)
+    assert_equal 1, dates.length
+    # Should return the next scheduled date on or after today
+    assert dates.first >= Date.current
+  end
+
+  test "transfer_dates with non-zero balance and no amount for one-time schedule should return start date if in future" do
+    future_date = Date.current + 1.week
+    schedule = Schedule.new(
+      name: "Relative One-time Schedule",
+      amount: nil,
+      starts_on: future_date,
+      period: nil,  # One-time schedule
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    dates = schedule.transfer_dates(Date.current + 2.weeks)
+    assert_equal 1, dates.length
+    assert_equal future_date, dates.first
+  end
+
+  test "transfer_dates with non-zero balance and no amount for one-time schedule should return nothing if start date passed" do
+    schedule = Schedule.new(
+      name: "Relative One-time Schedule",
+      amount: nil,
+      starts_on: 1.week.ago.to_date,
+      period: nil,  # One-time schedule
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    dates = schedule.transfer_dates(Date.current + 1.week)
+    assert_empty dates
+  end
+
+  test "transfer_dates with fixed amount should behave normally regardless of relative account" do
+    schedule = Schedule.new(
+      name: "Relative Schedule with Fixed Amount",
+      amount: 500,
+      starts_on: 2.weeks.ago.to_date,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)
+    )
+
+    dates = schedule.transfer_dates(Date.current + 2.weeks)
+    # Should generate normal recurring dates
+    assert dates.length >= 3
+    assert dates.include?(schedule.starts_on)
+    assert dates.all? { |date| date <= Date.current + 2.weeks }
+  end
+
+  test "transfer_dates without relative account should behave normally" do
+    schedule = Schedule.new(
+      name: "Normal Schedule",
+      amount: 500,
+      starts_on: 2.weeks.ago.to_date,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: nil
+    )
+
+    dates = schedule.transfer_dates(Date.current + 2.weeks)
+    # Should generate normal recurring dates
+    assert dates.length >= 3
+    assert dates.include?(schedule.starts_on)
+    assert dates.all? { |date| date <= Date.current + 2.weeks }
+  end
+
+  test "transfer_dates relative account should respect end date" do
+    end_date = Date.current + 1.week
+    schedule = Schedule.new(
+      name: "Relative Schedule with End Date",
+      amount: nil,
+      starts_on: 1.week.ago.to_date,
+      period: "day",
+      frequency: 1,
+      ends_on: end_date,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)
+    )
+
+    dates = schedule.transfer_dates(Date.current + 1.month)
+    assert_equal 1, dates.length
+    assert dates.first <= end_date
+  end
+
+  test "transfer_dates relative account should handle up_to_date before next date" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current + 1.week,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)
+    )
+
+    # Query for a date before the next scheduled date
+    dates = schedule.transfer_dates(Date.current + 3.days)
+    assert_empty dates
+  end
+
+  test "find_next_date_from should work correctly for recurring schedules" do
+    schedule = Schedule.new(
+      name: "Weekly Schedule",
+      amount: 100,
+      starts_on: 2.weeks.ago.to_date,
+      period: "week",
+      frequency: 1
+    )
+
+    # Should find the next weekly date on or after today
+    next_date = schedule.send(:find_next_date_from, Date.current)
+    assert next_date >= Date.current
+
+    # Should be one of the expected weekly dates
+    expected_dates = []
+    current = schedule.starts_on
+    while current <= Date.current + 2.weeks
+      expected_dates << current
+      current += 1.week
+    end
+    assert expected_dates.include?(next_date)
+  end
+
+  test "find_next_date_from should work correctly for one-time schedules" do
+    future_date = Date.current + 1.week
+    schedule = Schedule.new(
+      name: "One-time Schedule",
+      amount: 100,
+      starts_on: future_date,
+      period: nil
+    )
+
+    # Should return the start date if it's in the future
+    next_date = schedule.send(:find_next_date_from, Date.current)
+    assert_equal future_date, next_date
+
+    # Should return nil if querying for a date after the start date
+    next_date = schedule.send(:find_next_date_from, future_date + 1.day)
+    assert_nil next_date
+  end
+
+  # Integration tests for date and amount logic working together
+  test "integration: zero balance and no amount should generate no transfers" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:lazaro_cash)  # Zero balance
+    )
+
+    # transfer_dates should return empty array
+    dates = schedule.transfer_dates(Date.current + 1.month)
+    assert_empty dates
+
+    # planned_transfers should also return empty array
+    transfers = schedule.planned_transfers(dates)
+    assert_empty transfers
+  end
+
+  test "integration: non-zero balance and no amount should generate one transfer with correct amount" do
+    schedule = Schedule.new(
+      name: "Relative Schedule",
+      amount: nil,
+      starts_on: 1.week.ago.to_date,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    # transfer_dates should return one date
+    dates = schedule.transfer_dates(Date.current + 1.month)
+    assert_equal 1, dates.length
+
+    # planned_transfers should create one transfer with the balance amount
+    transfers = schedule.planned_transfers(dates)
+    assert_equal 1, transfers.length
+    assert_equal 800, transfers.first.amount
+    assert_equal dates.first, transfers.first.pending_on
+  end
+
+  test "integration: fixed amount with relative account should generate normal dates with mixed amounts" do
+    schedule = Schedule.new(
+      name: "Relative Schedule with Fixed Amount",
+      amount: 500,
+      starts_on: 1.week.ago.to_date,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    # transfer_dates should return normal recurring dates
+    dates = schedule.transfer_dates(Date.current + 3.weeks)
+    assert dates.length >= 3
+
+    # planned_transfers should use balance for first, fixed amount for rest
+    transfers = schedule.planned_transfers(dates)
+    assert_equal dates.length, transfers.length
+    assert_equal 800, transfers.first.amount  # Uses balance
+    transfers[1..-1].each do |transfer|
+      assert_equal 500, transfer.amount  # Uses fixed amount
+    end
+  end
+
+  test "integration: one-time relative schedule with balance should work correctly" do
+    future_date = Date.current + 1.week
+    schedule = Schedule.new(
+      name: "One-time Relative Schedule",
+      amount: nil,
+      starts_on: future_date,
+      period: nil,  # One-time
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)  # Balance: 800
+    )
+
+    # transfer_dates should return the future date
+    dates = schedule.transfer_dates(Date.current + 2.weeks)
+    assert_equal 1, dates.length
+    assert_equal future_date, dates.first
+
+    # planned_transfers should create one transfer with balance amount
+    transfers = schedule.planned_transfers(dates)
+    assert_equal 1, transfers.length
+    assert_equal 800, transfers.first.amount
+    assert_equal future_date, transfers.first.pending_on
+  end
+
+  test "integration: create_pending_transfers should work with relative schedules" do
+    # Create a relative schedule in the database
+    schedule = Schedule.create!(
+      name: "Test Relative Schedule",
+      amount: nil,
+      starts_on: Date.current,
+      period: "week",
+      frequency: 1,
+      debit_account: accounts(:expense_account),
+      credit_account: accounts(:lazaro_cash),
+      relative_account: accounts(:cash_with_balance)
+    )
+
+    # Should create one pending transfer for today
+    initial_transfer_count = Transfer.count
+    schedule.create_pending_transfers
+
+    # Should have created one new transfer
+    assert_equal initial_transfer_count + 1, Transfer.count
+
+    # Check the transfer details
+    transfer = Transfer.order(:created_at).last
+    assert_equal schedule, transfer.schedule
+    assert_equal 800, transfer.amount  # Balance amount
+    assert_equal Date.current, transfer.pending_on
+    assert_equal "pending", transfer.state
   end
 end

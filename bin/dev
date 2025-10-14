@@ -1,2 +1,2 @@
 #!/usr/bin/env ruby
-exec "./bin/rails", "server", "-b", "ssl://localhost:3000", *ARGV
+exec "./bin/rails", "server", "-b", "192.168.0.2"

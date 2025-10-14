@@ -1,0 +1,47 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Adjustments for <%= @account.name %></h1>
+    <div class="page__header-actions">
+      <%= back_button @account %>
+      <%= new_button new_account_adjustment_path(@account) %>
+    </div>
+  </div>
+
+  <div class="page__content">
+    <div class="page__list">
+      <% @adjustments.each do |adjustment| %>
+        <div class="adjustments-index__card">
+          <div class="adjustments-index__card-header">
+            <div class="adjustments-index__card-info">
+              <h3 class="adjustments-index__card-amount">
+                <% if adjustment.debit_amount? %>
+                  <span class="adjustments-index__debit">+<%= number_to_currency(adjustment.debit_amount / 100.0) %></span>
+                <% elsif adjustment.credit_amount? %>
+                  <span class="adjustments-index__credit">-<%= number_to_currency(adjustment.credit_amount / 100.0) %></span>
+                <% end %>
+              </h3>
+              <span class="adjustments-index__card-date"><%= adjustment.created_at.strftime("%B %d, %Y") %></span>
+            </div>
+            <div class="adjustments-index__card-actions">
+              <%= edit_button edit_account_adjustment_path(@account, adjustment) %>
+              <%= delete_button account_adjustment_path(@account, adjustment), 
+                  data: { turbo_confirm: "Are you sure you want to delete this adjustment?" } %>
+            </div>
+          </div>
+          <% if adjustment.note.present? %>
+            <div class="adjustments-index__card-body">
+              <p class="adjustments-index__note"><%= adjustment.note %></p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @adjustments.empty? %>
+      <div class="page__empty">
+        <p>No adjustments for this account yet.</p>
+        <p><%= new_button new_account_adjustment_path(@account) %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

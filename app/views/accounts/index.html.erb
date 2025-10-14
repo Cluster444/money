@@ -1,0 +1,98 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Accounts</h1>
+    <%= new_button new_account_path %>
+  </div>
+
+  <div class="page__content">
+    <div class="page__list">
+    <% if @cash_accounts.any? %>
+      <h2 class="page__section-header">Cash</h2>
+      <% @cash_accounts.each do |account| %>
+        <%= link_to account_path(account), class: "accounts-index__link" do %>
+          <div class="accounts-index__card">
+            <div class="accounts-index__card-header">
+              <h3 class="accounts-index__card-name"><%= account.name %></h3>
+            </div>
+            <div class="accounts-index__card-body">
+              <div class="accounts-index__balance">
+                <span class="accounts-index__balance-label">Posted Balance:</span>
+                <span class="accounts-index__balance-value"><%= number_to_currency(account.posted_balance / 100.0) %></span>
+              </div>
+               <div class="accounts-index__balance">
+                 <span class="accounts-index__balance-label">Pending Transfers:</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.pending_balance / 100.0) %></span>
+               </div>
+               <div class="accounts-index__balance">
+                 <span class="accounts-index__balance-label">Planned Transfers (30d):</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.planned_balance(Date.current + 30.days) / 100.0) %></span>
+               </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if @credit_card_accounts.any? %>
+      <h2 class="page__section-header">Credit Cards</h2>
+      <% @credit_card_accounts.each do |account| %>
+        <%= link_to account_path(account), class: "accounts-index__link" do %>
+          <div class="accounts-index__card">
+            <div class="accounts-index__card-header">
+              <h3 class="accounts-index__card-name"><%= account.name %></h3>
+            </div>
+            <div class="accounts-index__card-body">
+              <div class="accounts-index__balance">
+                <span class="accounts-index__balance-label">Amount Owed:</span>
+                <span class="accounts-index__balance-value"><%= number_to_currency(account.posted_balance / 100.0) %></span>
+              </div>
+               <div class="accounts-index__balance">
+                 <span class="accounts-index__balance-label">Pending Transfers:</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.pending_balance / 100.0) %></span>
+               </div>
+               <div class="accounts-index__balance">
+                 <span class="accounts-index__balance-label">Planned Transfers (30d):</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.planned_balance(Date.current + 30.days) / 100.0) %></span>
+               </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if @vendor_accounts.any? %>
+      <h2 class="page__section-header">Vendors</h2>
+      <% @vendor_accounts.each do |account| %>
+        <%= link_to account_path(account), class: "accounts-index__link" do %>
+          <div class="accounts-index__card">
+            <div class="accounts-index__card-header">
+              <h3 class="accounts-index__card-name"><%= account.name %></h3>
+            </div>
+            <div class="accounts-index__card-body">
+              <div class="accounts-index__balance">
+                <span class="accounts-index__balance-label">Posted Balance:</span>
+                <span class="accounts-index__balance-value"><%= number_to_currency(account.posted_balance / 100.0) %></span>
+              </div>
+               <div class="accounts-index__balance">
+                 <span class="accounts-index__balance-label">Pending Transfers:</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.pending_balance / 100.0) %></span>
+               </div>
+               <div class="accounts-index__balance">
+                 <span class="accounts-index__balance-label">Planned Transfers (30d):</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.planned_balance(Date.current + 30.days) / 100.0) %></span>
+               </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+    </div>
+
+    <% if @cash_accounts.empty? && @credit_card_accounts.empty? && @vendor_accounts.empty? %>
+      <div class="page__empty">
+        <p>No accounts yet. Create your first account to get started.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
