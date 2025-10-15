@@ -34,11 +34,11 @@
           </div>
         </div>
         <div class="accounts-show__balance">
-          <div class="accounts-show__balance-label">Pending Transfers</div>
+          <div class="accounts-show__balance-label">Pending</div>
           <div class="accounts-show__balance-value"><%= number_to_currency(@account.pending_balance / 100.0) %></div>
         </div>
         <div class="accounts-show__balance">
-          <div class="accounts-show__balance-label">Planned Transfers (30d)</div>
+          <div class="accounts-show__balance-label">Planned (30d)</div>
           <div class="accounts-show__balance-value"><%= number_to_currency(@account.planned_balance(Date.current + 30.days) / 100.0) %></div>
         </div>
       </div>
