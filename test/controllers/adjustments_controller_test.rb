@@ -8,17 +8,17 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get account_adjustments_url(@account)
+    get organization_account_adjustments_url(@account.organization, @account)
     assert_response :success
     assert_select "h1", "Adjustments for #{@account.name}"
-    assert_select "a[href=?]", new_account_adjustment_path(@account)
+    assert_select "a[href=?]", new_organization_account_adjustment_path(@account.organization, @account)
   end
 
   test "should get new" do
-    get new_account_adjustment_url(@account)
+    get new_organization_account_adjustment_url(@account.organization, @account)
     assert_response :success
     assert_select "h1", "New Adjustment for #{@account.name}"
-    assert_select "form[action=?]", account_adjustments_path(@account)
+    assert_select "form[action=?]", organization_account_adjustments_path(@account.organization, @account)
     assert_select "textarea[name='adjustment[note]']"
     assert_select "input[name='adjustment[target_balance]']"
   end
@@ -28,7 +28,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     target_balance = initial_balance + 10000  # Increase by $100
 
     assert_difference("Adjustment.count", 1) do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           target_balance: (target_balance / 100.0).to_s,  # Convert to dollars
           note: "Test adjustment to increase balance"
@@ -36,7 +36,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
     assert_equal "Adjustment was successfully created.", flash[:notice]
 
     @account.reload
@@ -57,7 +57,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     target_balance = initial_balance - 5000  # Decrease by $50
 
     assert_difference("Adjustment.count", 1) do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           target_balance: (target_balance / 100.0).to_s,  # Convert to dollars
           note: "Test adjustment to decrease balance"
@@ -65,7 +65,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
     assert_equal "Adjustment was successfully created.", flash[:notice]
 
     @account.reload
@@ -80,7 +80,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create adjustment without note" do
     assert_no_difference("Adjustment.count") do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           target_balance: "100.00"
         }
@@ -88,12 +88,12 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "form[action=?]", account_adjustments_path(@account)
+    assert_select "form[action=?]", organization_account_adjustments_path(@account.organization, @account)
   end
 
   test "should not create adjustment without target balance" do
     assert_no_difference("Adjustment.count") do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           note: "Test adjustment"
         }
@@ -101,14 +101,14 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "form[action=?]", account_adjustments_path(@account)
+    assert_select "form[action=?]", organization_account_adjustments_path(@account.organization, @account)
   end
 
   test "should not create adjustment when target balance equals current balance" do
     current_balance_dollars = (@account.posted_balance / 100.0).to_s
 
     assert_no_difference("Adjustment.count") do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           target_balance: current_balance_dollars,
           note: "Test adjustment with no change"
@@ -117,7 +117,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "form[action=?]", account_adjustments_path(@account)
+    assert_select "form[action=?]", organization_account_adjustments_path(@account.organization, @account)
   end
 
   test "should get edit" do
@@ -126,10 +126,10 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       note: "Test adjustment"
     )
 
-    get edit_account_adjustment_url(@account, adjustment)
+    get edit_organization_account_adjustment_url(@account.organization, @account, adjustment)
     assert_response :success
     assert_select "h1", "Edit Adjustment for #{@account.name}"
-    assert_select "form[action=?]", account_adjustment_path(@account, adjustment)
+    assert_select "form[action=?]", organization_account_adjustment_path(@account.organization, @account, adjustment)
     assert_select "textarea[name='adjustment[note]']", "Test adjustment"
     assert_select "input[name='adjustment[target_balance]']"
   end
@@ -144,14 +144,14 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     initial_balance = @account.posted_balance  # Should be $150
 
     # Update to target $200 balance
-    patch account_adjustment_url(@account, adjustment), params: {
+    patch organization_account_adjustment_url(@account.organization, @account, adjustment), params: {
       adjustment: {
         target_balance: "200.00",  # $200.00 in dollars
         note: "Updated note"
       }
     }
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
     assert_equal "Adjustment was successfully updated.", flash[:notice]
 
     @account.reload
@@ -173,14 +173,14 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     initial_balance = @account.posted_balance  # Should be $300
 
     # Update to target $150 balance
-    patch account_adjustment_url(@account, adjustment), params: {
+    patch organization_account_adjustment_url(@account.organization, @account, adjustment), params: {
       adjustment: {
         target_balance: "150.00",  # $150.00 in dollars
         note: "Updated note"
       }
     }
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
     assert_equal "Adjustment was successfully updated.", flash[:notice]
 
     @account.reload
@@ -198,7 +198,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       note: "Original note"
     )
 
-    patch account_adjustment_url(@account, adjustment), params: {
+    patch organization_account_adjustment_url(@account.organization, @account, adjustment), params: {
       adjustment: {
         target_balance: "",
         note: ""
@@ -220,10 +220,10 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     initial_balance = @account.posted_balance
 
     assert_difference("Adjustment.count", -1) do
-      delete account_adjustment_url(@account, adjustment)
+      delete organization_account_adjustment_url(@account.organization, @account, adjustment)
     end
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
     assert_equal "Adjustment was successfully deleted.", flash[:notice]
 
     @account.reload
@@ -237,15 +237,16 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       email_address: "other@example.com",
       password: "password123"
     )
-    other_account = other_user.accounts.create!(
+    organization = other_user.organizations.create!(name: "Other Organization")
+    other_account = organization.accounts.create!(
       name: "Other User Account",
       kind: "cash"
     )
 
-    get new_account_adjustment_url(other_account)
+    get new_organization_account_adjustment_url(other_account.organization, other_account)
     assert_response :not_found
 
-    post account_adjustments_url(other_account), params: {
+    post organization_account_adjustments_url(other_account.organization, other_account), params: {
       adjustment: {
         target_balance: "100.00",
         note: "Test adjustment"
@@ -254,6 +255,8 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
 
     # Clean up
+    other_user.organizations.each { |org| org.accounts.destroy_all }
+    other_user.organizations.destroy_all
     other_user.destroy
   end
 
@@ -264,7 +267,8 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       email_address: "other@example.com",
       password: "password123"
     )
-    other_account = other_user.accounts.create!(
+    organization = other_user.organizations.create!(name: "Other Organization")
+    other_account = organization.accounts.create!(
       name: "Other User Account",
       kind: "cash"
     )
@@ -273,20 +277,22 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
       note: "Other adjustment"
     )
 
-    get edit_account_adjustment_url(other_account, other_adjustment)
+    get edit_organization_account_adjustment_url(other_account.organization, other_account, other_adjustment)
     assert_response :not_found
 
-    patch account_adjustment_url(other_account, other_adjustment), params: {
+    patch organization_account_adjustment_url(other_account.organization, other_account, other_adjustment), params: {
       adjustment: {
         note: "Updated note"
       }
     }
     assert_response :not_found
 
-    delete account_adjustment_url(other_account, other_adjustment)
+    delete organization_account_adjustment_url(other_account.organization, other_account, other_adjustment)
     assert_response :not_found
 
     # Clean up
+    other_user.organizations.each { |org| org.accounts.destroy_all }
+    other_user.organizations.destroy_all
     other_user.destroy
   end
 
@@ -295,7 +301,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     target_balance = initial_balance + 12345  # Add $123.45
 
     assert_difference("Adjustment.count", 1) do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           target_balance: "123.45",  # $123.45
           note: "Decimal amount test"
@@ -314,7 +320,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     initial_balance = @account.posted_balance
 
     assert_difference("Adjustment.count", 1) do
-      post account_adjustments_url(@account), params: {
+      post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
           target_balance: "10.005",  # Should round to 10.01
           note: "Rounding test"

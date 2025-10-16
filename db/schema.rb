@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_14_204319) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_16_004823) do
   create_table "accounts", force: :cascade do |t|
     t.string "kind", null: false
     t.string "name", null: false
@@ -20,8 +20,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_204319) do
     t.json "metadata", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["user_id"], name: "index_accounts_on_user_id"
+    t.integer "organization_id"
+    t.index ["organization_id"], name: "index_accounts_on_organization_id"
   end
 
   create_table "adjustments", force: :cascade do |t|
@@ -32,6 +32,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_204319) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_adjustments_on_account_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_organizations_on_user_id"
   end
 
   create_table "schedules", force: :cascade do |t|
@@ -86,8 +94,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_204319) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
-  add_foreign_key "accounts", "users"
+  add_foreign_key "accounts", "organizations"
   add_foreign_key "adjustments", "accounts"
+  add_foreign_key "organizations", "users"
   add_foreign_key "schedules", "accounts", column: "credit_account_id"
   add_foreign_key "schedules", "accounts", column: "debit_account_id"
   add_foreign_key "schedules", "accounts", column: "relative_account_id"

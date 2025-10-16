@@ -9,12 +9,12 @@
         Modifying this adjustment will update the account's balance accordingly.
       </p>
 
-      <%= form_with(model: [@account, @adjustment], local: true, class: "form") do |form| %>
+      <%= form_with(model: @adjustment, url: organization_account_adjustment_path(current_organization, @account, @adjustment), method: :patch, local: true, class: "form") do |form| %>
         <%= render "form", form: form %>
         
         <div class="form__actions">
           <%= form.submit "Update Adjustment", class: "btn btn--primary" %>
-          <%= cancel_button @account %>
+          <%= cancel_button organization_account_path(current_organization, @account) %>
         </div>
       <% end %>
     </div>

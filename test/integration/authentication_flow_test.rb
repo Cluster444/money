@@ -14,6 +14,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     post session_url, params: { email_address: @user.email_address, password: "password123" }
     assert_redirected_to root_url
     follow_redirect!
+    assert_redirected_to organizations_url
+    follow_redirect!
     assert_response :success
 
     # Verify we're authenticated by checking session cookie exists
@@ -38,6 +40,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     # Make multiple requests
     3.times do
       get root_url
+      assert_redirected_to organizations_url
+      follow_redirect!
       assert_response :success
       # Verify session persists by checking we're not redirected to login
       assert_not_equal new_session_url, response.location

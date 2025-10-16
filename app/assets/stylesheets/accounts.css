@@ -469,21 +469,15 @@
 
 .accounts-show__schedule-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 1rem;
-}
-
-.accounts-show__schedule-row > div {
-  flex: 1;
-}
-
-.accounts-show__schedule-row-last {
-  text-align: right;
 }
 
 .accounts-show__schedule-dates {
   display: flex;
   gap: 1rem;
+  text-align: right;
 }
 
 .accounts-show__schedule-detail {

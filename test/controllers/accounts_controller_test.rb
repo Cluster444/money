@@ -7,18 +7,18 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with no accounts" do
-    @user.accounts.destroy_all
+    @user.organizations.joins(:accounts).each { |org| org.accounts.destroy_all }
 
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
     assert_response :success
     assert_select "h1", "Accounts"
     assert_select ".page__empty", "No accounts yet. Create your first account to get started."
   end
 
   test "should get index with cash accounts only" do
-    @user.accounts.where.not(kind: "cash").destroy_all
+    @user.organizations.joins(:accounts).where.not(accounts: { kind: "cash" }).each { |org| org.accounts.where.not(kind: "cash").destroy_all }
 
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
     assert_response :success
     assert_select "h1", "Accounts"
     assert_select ".page__section-header", "Cash"
@@ -30,7 +30,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   test "should get index with credit card accounts only" do
     @user.accounts.where.not(kind: "credit_card").destroy_all
 
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
     assert_response :success
     assert_select "h1", "Accounts"
     assert_select ".page__section-header", { text: "Cash", count: 0 }
@@ -42,7 +42,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   test "should get index with vendor accounts only" do
     @user.accounts.where.not(kind: "vendor").destroy_all
 
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
     assert_response :success
     assert_select "h1", "Accounts"
     assert_select ".page__section-header", { text: "Cash", count: 0 }
@@ -52,7 +52,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with all account types" do
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
     assert_response :success
     assert_select "h1", "Accounts"
     assert_select ".page__section-header", "Cash"
@@ -62,7 +62,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should display account balances correctly" do
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
 
     @user.accounts.each do |account|
       assert_select ".accounts-index__card-name", account.name
@@ -71,7 +71,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should order accounts alphabetically within each section" do
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
 
     # Extract account names from the response in order and decode HTML entities
     account_names = response.body.scan(/class="accounts-index__card-name">(.*?)<\/h3>/m).flatten.map { |name| CGI.unescapeHTML(name) }
@@ -87,26 +87,26 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should include new account link" do
-    get accounts_url
+    get organization_accounts_url(@user.organizations.first)
     assert_response :success
-    assert_select "a[href=?]", new_account_path, text: "New"
+    assert_select "a[href=?]", new_organization_account_path(@user.organizations.first), text: "New"
   end
 
   test "should get new" do
-    get new_account_url
+    get new_organization_account_url(@user.organizations.first)
     assert_response :success
     assert_select "h1", "New Account"
-    assert_select "form[action=?]", accounts_path
+    assert_select "form[action=?]", organization_accounts_path(@user.organizations.first)
     assert_select "select[name='account[kind]']"
     assert_select "input[name='account[name]']"
   end
 
   test "should create account" do
     assert_difference("Account.count", 1) do
-      post accounts_url, params: { account: { name: "Test Account", kind: "cash" } }
+      post organization_accounts_url(@user.organizations.first), params: { account: { name: "Test Account", kind: "cash" } }
     end
 
-    assert_redirected_to accounts_url
+    assert_redirected_to organization_accounts_url(@user.organizations.first)
     assert_equal "Account was successfully created.", flash[:notice]
 
     created_account = Account.last
@@ -117,17 +117,17 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create account with invalid data" do
     assert_no_difference("Account.count") do
-      post accounts_url, params: { account: { name: "", kind: "cash" } }
+      post organization_accounts_url(@user.organizations.first), params: { account: { name: "", kind: "cash" } }
     end
 
     assert_response :unprocessable_entity
-    assert_select "form[action=?]", accounts_path
+    assert_select "form[action=?]", organization_accounts_path(@user.organizations.first)
   end
 
   test "should show account" do
     account = @user.accounts.cash.first
 
-    get account_url(account)
+    get organization_account_url(account.organization, account)
     assert_response :success
     assert_select "h1", account.name
     assert_select ".accounts-show__balance-value", text: /\$\d+\.\d{2}/
@@ -141,25 +141,28 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       email_address: "other@example.com",
       password: "password123"
     )
-    other_account = other_user.accounts.create!(
+    organization = other_user.organizations.create!(name: "Other Organization")
+    other_account = organization.accounts.create!(
       name: "Other User Account",
       kind: "cash"
     )
 
-    get account_url(other_account)
+    get organization_account_url(other_account.organization, other_account)
     assert_response :not_found
 
     # Clean up
+    other_user.organizations.each { |org| org.accounts.destroy_all }
+    other_user.organizations.destroy_all
     other_user.destroy
   end
 
   test "should get edit" do
     account = @user.accounts.cash.first
 
-    get edit_account_url(account)
+    get edit_organization_account_url(account.organization, account)
     assert_response :success
     assert_select "h1", "Edit Account"
-    assert_select "form[action=?]", account_path(account)
+    assert_select "form[action=?]", organization_account_path(account.organization, account)
     assert_select "input[name='account[name]'][value=?]", account.name
     assert_select "select[name='account[kind]']"
   end
@@ -167,8 +170,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   test "should update account" do
     account = @user.accounts.cash.first
 
-    patch account_url(account), params: { account: { name: "Updated Account Name" } }
-    assert_redirected_to account_url(account)
+    patch organization_account_url(account.organization, account), params: { account: { name: "Updated Account Name" } }
+    assert_redirected_to organization_account_url(account.organization, account)
     assert_equal "Account was successfully updated.", flash[:notice]
 
     account.reload
@@ -179,7 +182,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     account = @user.accounts.cash.first
     original_name = account.name
 
-    patch account_url(account), params: { account: { name: "" } }
+    patch organization_account_url(account.organization, account), params: { account: { name: "" } }
     assert_response :unprocessable_entity
 
     account.reload
@@ -188,7 +191,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create credit card account" do
     assert_difference("Account.count", 1) do
-      post accounts_url, params: {
+      post organization_accounts_url(@user.organizations.first), params: {
         account: {
           name: "Test Credit Card",
           kind: "credit_card"
@@ -196,7 +199,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to accounts_url
+    assert_redirected_to organization_accounts_url(@user.organizations.first)
 
     created_account = Account.last
     assert_equal "Test Credit Card", created_account.name
@@ -206,7 +209,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   test "should show credit card account with payment schedule" do
     credit_card = accounts(:lazaro_credit_card)
 
-    get account_url(credit_card)
+    get organization_account_url(credit_card.organization, credit_card)
     assert_response :success
     assert_select "h1", credit_card.name
     assert_select ".accounts-show__kind--credit_card", "Credit card"

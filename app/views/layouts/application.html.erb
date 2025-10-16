@@ -32,6 +32,9 @@
       </div>
     </header>
     <main class="container">
+      <% if request.path.match?(/^\/organizations\/\d+\//) %>
+        <%= render "widgets/org_switcher" %>
+      <% end %>
       <%= yield %>
     </main>
   </body>

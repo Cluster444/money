@@ -5,8 +5,8 @@
       <span class="accounts-show__kind accounts-show__kind--<%= @account.kind %>"><%= @account.kind.humanize %></span>
     </div>
     <div class="accounts-show__actions">
-      <%= back_button accounts_path, "Back to Accounts" %>
-      <%= edit_button edit_account_path(@account) %>
+      <%= back_button organization_accounts_path(current_organization), "Back to Accounts" %>
+      <%= edit_button edit_organization_account_path(current_organization, @account) %>
     </div>
   </div>
 
@@ -27,19 +27,19 @@
         <div class="accounts-show__balance">
           <div class="accounts-show__balance-label"><%= @account.credit_card? ? "Amount Owed" : "Posted Balance" %></div>
           <div class="accounts-show__balance-value">
-            <%= link_to number_to_currency(@account.posted_balance / 100.0), 
-                        account_adjustments_path(@account), 
+            <%= link_to number_to_currency(@account.posted_balance_for_display / 100.0), 
+                        organization_account_adjustments_path(current_organization, @account), 
                         class: "accounts-show__balance-link",
                         title: "View adjustments for this account" %>
           </div>
         </div>
         <div class="accounts-show__balance">
           <div class="accounts-show__balance-label">Pending</div>
-          <div class="accounts-show__balance-value"><%= number_to_currency(@account.pending_balance / 100.0) %></div>
+          <div class="accounts-show__balance-value"><%= number_to_currency(@account.pending_balance_for_display / 100.0) %></div>
         </div>
         <div class="accounts-show__balance">
           <div class="accounts-show__balance-label">Planned (30d)</div>
-          <div class="accounts-show__balance-value"><%= number_to_currency(@account.planned_balance(Date.current + 30.days) / 100.0) %></div>
+          <div class="accounts-show__balance-value"><%= number_to_currency(@account.planned_balance_for_display(Date.current + 30.days) / 100.0) %></div>
         </div>
       </div>
 
@@ -98,15 +98,21 @@
             <div class="accounts-show__schedule-card">
               <div class="accounts-show__schedule-header">
                 <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
-                <% if schedule.amount.present? %>
-                  <span class="accounts-show__schedule-amount"><%= number_to_currency(schedule.amount / 100.0) %></span>
+                <% if schedule.amount.present? && schedule.period.present? %>
+                  <span class="accounts-show__schedule-amount-frequency">
+                    <% if schedule.frequency > 1 %>
+                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.frequency %> <%= schedule.period.humanize.pluralize(schedule.frequency) %>
+                    <% else %>
+                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.period.humanize %>
+                    <% end %>
+                  </span>
                 <% end %>
               </div>
               <div class="accounts-show__schedule-details">
                 <div class="accounts-show__schedule-row">
                   <div>
                     <div class="accounts-show__schedule-detail">
-                      <span class="accounts-show__schedule-label">To:</span>
+                      <span class="accounts-show__schedule-label">From:</span>
                       <span class="accounts-show__schedule-value"><%= schedule.credit_account.name %></span>
                     </div>
                   </div>
@@ -124,16 +130,6 @@
                       </div>
                     <% end %>
                   </div>
-                  <% if schedule.period.present? %>
-                    <div class="accounts-show__schedule-row-last">
-                      <div class="accounts-show__schedule-detail">
-                        <span class="accounts-show__schedule-label">Frequency:</span>
-                        <span class="accounts-show__schedule-value">
-                          <%= format_schedule_frequency(schedule) %>
-                        </span>
-                      </div>
-                    </div>
-                  <% end %>
                 </div>
                 <% if schedule.ends_on.present? %>
                   <div class="accounts-show__schedule-detail">
@@ -156,15 +152,21 @@
             <div class="accounts-show__schedule-card">
               <div class="accounts-show__schedule-header">
                 <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
-                <% if schedule.amount.present? %>
-                  <span class="accounts-show__schedule-amount"><%= number_to_currency(schedule.amount / 100.0) %></span>
+                <% if schedule.amount.present? && schedule.period.present? %>
+                  <span class="accounts-show__schedule-amount-frequency">
+                    <% if schedule.frequency > 1 %>
+                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.frequency %> <%= schedule.period.humanize.pluralize(schedule.frequency) %>
+                    <% else %>
+                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.period.humanize %>
+                    <% end %>
+                  </span>
                 <% end %>
               </div>
               <div class="accounts-show__schedule-details">
                 <div class="accounts-show__schedule-row">
                   <div>
                     <div class="accounts-show__schedule-detail">
-                      <span class="accounts-show__schedule-label">From:</span>
+                      <span class="accounts-show__schedule-label">To:</span>
                       <span class="accounts-show__schedule-value"><%= schedule.debit_account.name %></span>
                     </div>
                   </div>
@@ -182,16 +184,6 @@
                       </div>
                     <% end %>
                   </div>
-                  <% if schedule.period.present? %>
-                    <div class="accounts-show__schedule-row-last">
-                      <div class="accounts-show__schedule-detail">
-                        <span class="accounts-show__schedule-label">Frequency:</span>
-                        <span class="accounts-show__schedule-value">
-                          <%= format_schedule_frequency(schedule) %>
-                        </span>
-                      </div>
-                    </div>
-                  <% end %>
                 </div>
                 <% if schedule.ends_on.present? %>
                   <div class="accounts-show__schedule-detail">

@@ -170,6 +170,17 @@ q:before, q:after {
   outline: none;
 }
 
+/* Remove number input spinners */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* Set core root defaults */
 html:focus-within {
   scroll-behavior: smooth;

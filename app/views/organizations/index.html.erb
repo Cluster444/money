@@ -1,0 +1,32 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Organizations</h1>
+    <%= new_button new_organization_path %>
+  </div>
+
+  <div class="page__content">
+    <div class="page__list">
+      <% @organizations.each do |organization| %>
+        <%= link_to organization_accounts_path(organization), class: "organizations-index__link" do %>
+          <div class="organizations-index__card">
+            <div class="organizations-index__card-header">
+              <h3 class="organizations-index__card-name"><%= organization.name %></h3>
+            </div>
+            <div class="organizations-index__card-body">
+              <div class="organizations-index__accounts-count">
+                <span class="organizations-index__accounts-label">Accounts:</span>
+                <span class="organizations-index__accounts-value"><%= organization.accounts.count %></span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @organizations.empty? %>
+      <div class="page__empty">
+        <p>No organizations yet. Create your first organization to get started.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

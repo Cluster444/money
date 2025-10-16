@@ -1,7 +1,8 @@
 class Account < ApplicationRecord
   enum :kind, { cash: "cash", vendor: "vendor", credit_card: "credit_card" }
 
-  belongs_to :user
+  belongs_to :organization
+  has_one :user, through: :organization
 
   validates :kind, presence: true, inclusion: { in: kinds.values }
   validates :name, presence: true
@@ -33,8 +34,24 @@ class Account < ApplicationRecord
     credit_card? ? credits - debits : debits - credits
   end
 
+  def posted_balance_for_display
+    if vendor?
+      credits - debits
+    else
+      posted_balance
+    end
+  end
+
   def pending_balance
     pending_debits_total - pending_credits_total
+  end
+
+  def pending_balance_for_display
+    if vendor?
+      pending_credits_total - pending_debits_total
+    else
+      pending_balance
+    end
   end
 
   def planned_balance_30_days
@@ -44,6 +61,14 @@ class Account < ApplicationRecord
 
   def planned_balance(on_date)
     planned_debits_total(on_date) - planned_credits_total(on_date)
+  end
+
+  def planned_balance_for_display(on_date)
+    if vendor?
+      planned_credits_total(on_date) - planned_debits_total(on_date)
+    else
+      planned_balance(on_date)
+    end
   end
 
   def create_adjustment!(credit_amount: nil, debit_amount: nil, note:)

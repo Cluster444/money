@@ -82,8 +82,26 @@ class UserTest < ActiveSupport::TestCase
   test "should destroy sessions when user destroyed" do
     session = @user.sessions.create!(ip_address: "127.0.0.1", user_agent: "Test Browser")
     assert_difference "Session.count", -2 do  # User already has 1 session in fixtures, creating 1 more = 2 total
+      # Clean up organizations and accounts first to avoid foreign key constraints
+      @user.organizations.each { |org| org.accounts.destroy_all }
+      @user.organizations.destroy_all
       @user.destroy
     end
     assert_raises(ActiveRecord::RecordNotFound) { session.reload }
+  end
+
+  test "should create personal organization after user creation" do
+    assert_difference "Organization.count", 1 do
+      User.create!(
+        first_name: "John",
+        last_name: "Doe",
+        email_address: "john.doe@example.com",
+        password: "password123"
+      )
+    end
+
+    user = User.find_by(email_address: "john.doe@example.com")
+    assert_equal 1, user.organizations.count
+    assert_equal "Personal", user.organizations.first.name
   end
 end

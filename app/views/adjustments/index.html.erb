@@ -2,8 +2,8 @@
   <div class="page__header">
     <h1>Adjustments for <%= @account.name %></h1>
     <div class="page__header-actions">
-      <%= back_button @account %>
-      <%= new_button new_account_adjustment_path(@account) %>
+      <%= back_button organization_account_path(current_organization, @account) %>
+      <%= new_button new_organization_account_adjustment_path(current_organization, @account) %>
     </div>
   </div>
 
@@ -23,8 +23,8 @@
               <span class="adjustments-index__card-date"><%= adjustment.created_at.strftime("%B %d, %Y") %></span>
             </div>
             <div class="adjustments-index__card-actions">
-              <%= edit_button edit_account_adjustment_path(@account, adjustment) %>
-              <%= delete_button account_adjustment_path(@account, adjustment), 
+              <%= edit_button edit_organization_account_adjustment_path(current_organization, @account, adjustment) %>
+              <%= delete_button organization_account_adjustment_path(current_organization, @account, adjustment), 
                   data: { turbo_confirm: "Are you sure you want to delete this adjustment?" } %>
             </div>
           </div>
@@ -40,7 +40,7 @@
     <% if @adjustments.empty? %>
       <div class="page__empty">
         <p>No adjustments for this account yet.</p>
-        <p><%= new_button new_account_adjustment_path(@account) %></p>
+        <p><%= new_button new_organization_account_adjustment_path(current_organization, @account) %></p>
       </div>
     <% end %>
   </div>

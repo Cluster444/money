@@ -38,6 +38,19 @@
   box-shadow: 0 0 0 2px oklch(from var(--link) / 0.25);
 }
 
+.form .form__input:-webkit-autofill,
+.form .form__select:-webkit-autofill,
+.form .form__input:autofill,
+.form .form__select:autofill,
+.form .form__input[data-com-onepassword-filled="light"],
+.form .form__select[data-com-onepassword-filled="light"] {
+  background-color: var(--bg-4) !important;
+  color: var(--font-1) !important;
+  box-shadow: 0 0 0 1000px var(--bg-4) inset !important;
+  -webkit-text-fill-color: var(--font-1) !important;
+  filter: none; /* For Firefox compatibility */
+}
+
 /* Form actions */
 .form .form__actions {
   display: flex;
@@ -99,6 +112,20 @@ input[type="text"]:focus {
   outline: none;
   border-color: var(--link);
   box-shadow: 0 0 0 2px oklch(from var(--link) / 0.25);
+}
+
+input[type="email"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill,
+input[type="text"]:-webkit-autofill,
+input[type="email"]:autofill,
+input[type="password"]:autofill,
+input[type="text"]:autofill,
+input[data-com-onepassword-filled="light"] {
+  background-color: var(--bg-4) !important;
+  color: var(--font-1) !important;
+  box-shadow: 0 0 0 1000px var(--bg-4) inset !important;
+  -webkit-text-fill-color: var(--font-1) !important;
+  filter: none; /* For Firefox compatibility */
 }
 
 /* Legacy submit button - should be updated to use btn classes */

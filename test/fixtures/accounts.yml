@@ -8,7 +8,7 @@ lazaro_cash:
   debits: 0
   credits: 0
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 lazaro_vendor:
   kind: vendor
@@ -17,7 +17,7 @@ lazaro_vendor:
   debits: 0
   credits: 0
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 # Additional accounts for testing
 revenue_account:
@@ -27,7 +27,7 @@ revenue_account:
   debits: 0
   credits: 0
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 expense_account:
   kind: vendor
@@ -36,7 +36,7 @@ expense_account:
   debits: 0
   credits: 0
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 # Accounts with balances for testing balance calculations
 cash_with_balance:
@@ -46,7 +46,7 @@ cash_with_balance:
   debits: 1000
   credits: 200
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 vendor_with_balance:
   kind: vendor
@@ -55,7 +55,7 @@ vendor_with_balance:
   debits: 100
   credits: 500
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 # Additional accounts for scope testing
 extra_cash:
@@ -65,7 +65,7 @@ extra_cash:
   debits: 0
   credits: 0
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 extra_vendor:
   kind: vendor
@@ -74,7 +74,7 @@ extra_vendor:
   debits: 0
   credits: 0
   metadata: {}
-  user: lazaro_nixon
+  organization: lazaro_personal
 
 lazaro_credit_card:
   kind: credit_card
@@ -83,4 +83,4 @@ lazaro_credit_card:
   debits: 0
   credits: 0
   metadata: { "due_day": 15, "statement_day": 1 }
-  user: lazaro_nixon 
+  organization: lazaro_personal

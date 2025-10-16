@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Accounts</h1>
-    <%= new_button new_account_path %>
+    <%= new_button new_organization_account_path(current_organization) %>
   </div>
 
   <div class="page__content">
@@ -9,7 +9,7 @@
     <% if @cash_accounts.any? %>
       <h2 class="page__section-header">Cash</h2>
       <% @cash_accounts.each do |account| %>
-        <%= link_to account_path(account), class: "accounts-index__link" do %>
+        <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
           <div class="accounts-index__card">
             <div class="accounts-index__card-header">
               <h3 class="accounts-index__card-name"><%= account.name %></h3>
@@ -36,7 +36,7 @@
     <% if @credit_card_accounts.any? %>
       <h2 class="page__section-header">Credit Cards</h2>
       <% @credit_card_accounts.each do |account| %>
-        <%= link_to account_path(account), class: "accounts-index__link" do %>
+        <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
           <div class="accounts-index__card">
             <div class="accounts-index__card-header">
               <h3 class="accounts-index__card-name"><%= account.name %></h3>
@@ -60,32 +60,32 @@
       <% end %>
     <% end %>
 
-    <% if @vendor_accounts.any? %>
-      <h2 class="page__section-header">Vendors</h2>
-      <% @vendor_accounts.each do |account| %>
-        <%= link_to account_path(account), class: "accounts-index__link" do %>
-          <div class="accounts-index__card">
-            <div class="accounts-index__card-header">
-              <h3 class="accounts-index__card-name"><%= account.name %></h3>
-            </div>
-            <div class="accounts-index__card-body">
-              <div class="accounts-index__balance">
-                <span class="accounts-index__balance-label">Posted Balance:</span>
-                <span class="accounts-index__balance-value"><%= number_to_currency(account.posted_balance / 100.0) %></span>
-              </div>
+     <% if @vendor_accounts.any? %>
+       <h2 class="page__section-header">Vendors</h2>
+       <% @vendor_accounts.each do |account| %>
+         <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
+           <div class="accounts-index__card">
+             <div class="accounts-index__card-header">
+               <h3 class="accounts-index__card-name"><%= account.name %></h3>
+             </div>
+             <div class="accounts-index__card-body">
                <div class="accounts-index__balance">
-                 <span class="accounts-index__balance-label">Pending:</span>
-                 <span class="accounts-index__balance-value"><%= number_to_currency(account.pending_balance / 100.0) %></span>
+                 <span class="accounts-index__balance-label">Posted Balance:</span>
+                 <span class="accounts-index__balance-value"><%= number_to_currency(account.posted_balance_for_display / 100.0) %></span>
                </div>
-               <div class="accounts-index__balance">
-                 <span class="accounts-index__balance-label">Planned (30d):</span>
-                 <span class="accounts-index__balance-value"><%= number_to_currency(account.planned_balance(Date.current + 30.days) / 100.0) %></span>
-               </div>
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-    <% end %>
+                <div class="accounts-index__balance">
+                  <span class="accounts-index__balance-label">Pending:</span>
+                  <span class="accounts-index__balance-value"><%= number_to_currency(account.pending_balance_for_display / 100.0) %></span>
+                </div>
+                <div class="accounts-index__balance">
+                  <span class="accounts-index__balance-label">Planned (30d):</span>
+                  <span class="accounts-index__balance-value"><%= number_to_currency(account.planned_balance_for_display(Date.current + 30.days) / 100.0) %></span>
+                </div>
+             </div>
+           </div>
+         <% end %>
+       <% end %>
+     <% end %>
     </div>
 
     <% if @cash_accounts.empty? && @credit_card_accounts.empty? && @vendor_accounts.empty? %>

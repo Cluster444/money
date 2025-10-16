@@ -26,9 +26,10 @@ ApplicationRecord.transaction do
     u.first_name = "John"
     u.last_name = "Doe"
   end
+  personal = user.organizations.first
 
   %w[Checking Savings].each do |cash_acct|
-    user.accounts.create!(
+    personal.accounts.create!(
       kind: "cash",
       name: "Checking",
       metadata: {}
@@ -36,7 +37,7 @@ ApplicationRecord.transaction do
   end
   checking = Account.first
 
-  visa_cc = user.accounts.create!(
+  visa_cc = personal.accounts.create!(
     kind: "credit_card",
     name: "Visa Card",
     metadata: {
@@ -47,7 +48,7 @@ ApplicationRecord.transaction do
 
   [ "Rent", "Car", "Car Insurance", "Gas", "Electricity",
     "Phone", "Internet", "Job" ].each do |vendor_acct|
-    user.accounts.create!(
+    personal.accounts.create!(
       kind: "vendor",
       name: vendor_acct,
       metadata: {}

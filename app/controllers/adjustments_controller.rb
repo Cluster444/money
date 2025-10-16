@@ -1,4 +1,5 @@
 class AdjustmentsController < ApplicationController
+  include OrganizationScoped
   before_action :set_account
   before_action :set_adjustment, only: [ :edit, :update, :destroy ]
 
@@ -14,7 +15,7 @@ class AdjustmentsController < ApplicationController
     @adjustment = @account.adjustments.build(adjustment_params)
 
     if @adjustment.save
-      redirect_to account_adjustments_path(@account), notice: "Adjustment was successfully created."
+      redirect_to organization_account_adjustments_path(current_organization, @account), notice: "Adjustment was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -25,7 +26,7 @@ class AdjustmentsController < ApplicationController
 
   def update
     if @adjustment.update(adjustment_params)
-      redirect_to account_adjustments_path(@account), notice: "Adjustment was successfully updated."
+      redirect_to organization_account_adjustments_path(current_organization, @account), notice: "Adjustment was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -33,13 +34,13 @@ class AdjustmentsController < ApplicationController
 
   def destroy
     @adjustment.destroy
-    redirect_to account_adjustments_path(@account), notice: "Adjustment was successfully deleted."
+    redirect_to organization_account_adjustments_path(current_organization, @account), notice: "Adjustment was successfully deleted."
   end
 
   private
 
   def set_account
-    @account = Current.user.accounts.find(params[:account_id])
+    @account = current_organization.accounts.find(params[:account_id])
   end
 
   def set_adjustment

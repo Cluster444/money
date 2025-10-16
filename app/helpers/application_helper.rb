@@ -5,6 +5,19 @@ module ApplicationHelper
     "Every #{schedule.period.humanize}"
   end
 
+  def format_schedule_name_with_amount(schedule)
+    if schedule.amount.present? && schedule.period.present?
+      amount_str = number_to_currency(schedule.amount / 100.0)
+      if schedule.frequency > 1
+        "#{schedule.name} (#{amount_str}/#{schedule.frequency} #{schedule.period.humanize.pluralize(schedule.frequency)})"
+      else
+        "#{schedule.name} (#{amount_str}/#{schedule.period.humanize})"
+      end
+    else
+      schedule.name
+    end
+  end
+
   def money_field(form, method, options = {})
     # Convert cents to dollars for display
     value = form.object.send(method)

@@ -1,0 +1,8 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+lazaro_personal:
+  user: lazaro_nixon
+  name: Personal
+lazaro_business:
+  user: lazaro_nixon
+  name: Personal

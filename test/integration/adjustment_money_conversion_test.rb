@@ -13,17 +13,17 @@ class AdjustmentMoneyConversionTest < ActionDispatch::IntegrationTest
     initial_balance = @account.posted_balance
 
     # Create adjustment with target balance
-    get new_account_adjustment_path(@account)
+    get new_organization_account_adjustment_path(@account.organization, @account)
     assert_response :success
 
-    post account_adjustments_path(@account), params: {
+    post organization_account_adjustments_path(@account.organization, @account), params: {
       adjustment: {
         target_balance: "222.00",  # User wants balance to be $222.00
         note: "Test adjustment with target balance"
       }
     }
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
 
     # Verify balance was updated correctly to target
     @account.reload
@@ -35,19 +35,19 @@ class AdjustmentMoneyConversionTest < ActionDispatch::IntegrationTest
     assert_equal "Test adjustment with target balance", adjustment.note
 
     # Edit the adjustment
-    get edit_account_adjustment_path(@account, adjustment)
+    get edit_organization_account_adjustment_path(@account.organization, @account, adjustment)
     assert_response :success
     assert_select "input[name='adjustment[target_balance]']"
 
     # Update with new target balance
-    patch account_adjustment_path(@account, adjustment), params: {
+    patch organization_account_adjustment_path(@account.organization, @account, adjustment), params: {
       adjustment: {
         target_balance: "333.33",  # Update to $333.33
         note: "Updated adjustment"
       }
     }
 
-    assert_redirected_to account_adjustments_path(@account)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
 
     # Verify balance was updated correctly
     @account.reload
@@ -59,8 +59,8 @@ class AdjustmentMoneyConversionTest < ActionDispatch::IntegrationTest
     assert_equal "Updated adjustment", adjustment.note
 
     # Delete the adjustment
-    delete account_adjustment_path(@account, adjustment)
-    assert_redirected_to account_adjustments_path(@account)
+    delete organization_account_adjustment_path(@account.organization, @account, adjustment)
+    assert_redirected_to organization_account_adjustments_path(@account.organization, @account)
 
     # Verify balance was restored to initial
     @account.reload

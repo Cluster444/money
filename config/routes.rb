@@ -2,8 +2,12 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :users, only: [ :new, :create ]
-  resources :accounts, only: [ :index, :new, :create, :show, :edit, :update ] do
-    resources :adjustments, only: [ :index, :new, :create, :edit, :update, :destroy ]
+  resources :organizations, only: [ :index, :new, :create, :edit, :update ] do
+    resources :accounts, only: [ :index, :new, :create, :show, :edit, :update ] do
+      resources :adjustments, only: [ :index, :new, :create, :edit, :update, :destroy ]
+    end
+    resources :transfers, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
+    resources :schedules, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -16,5 +20,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "accounts#index"
+  root "home#index"
 end

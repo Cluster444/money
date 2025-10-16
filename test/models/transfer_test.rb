@@ -375,7 +375,8 @@ test "post! should be transactional" do
   # Credit card constraint tests
   test "should prevent credit card from having credits less than debits" do
     user = users(:lazaro_nixon)
-    credit_card = user.accounts.create!(
+    organization = user.organizations.create!(name: "Test Organization")
+    credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
       metadata: { due_day: 15, statement_day: 1 }
@@ -399,7 +400,8 @@ test "post! should be transactional" do
 
   test "should allow credit card payment when credits >= debits" do
     user = users(:lazaro_nixon)
-    credit_card = user.accounts.create!(
+    organization = user.organizations.create!(name: "Test Organization")
+    credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
       metadata: { due_day: 15, statement_day: 1 }
@@ -422,7 +424,8 @@ test "post! should be transactional" do
 
   test "should prevent credit card charge when it would violate constraint" do
     user = users(:lazaro_nixon)
-    credit_card = user.accounts.create!(
+    organization = user.organizations.create!(name: "Test Organization")
+    credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
       metadata: { due_day: 15, statement_day: 1 }
@@ -452,7 +455,8 @@ test "post! should be transactional" do
 
   test "should allow credit card charge when credits >= debits" do
     user = users(:lazaro_nixon)
-    credit_card = user.accounts.create!(
+    organization = user.organizations.create!(name: "Test Organization")
+    credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
       metadata: { due_day: 15, statement_day: 1 }

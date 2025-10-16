@@ -11,7 +11,7 @@ class UsersController < ApplicationController
     if @user.save
       start_new_session_for(@user)
 
-      redirect_to accounts_path, notice: "Welcome! Your account has been created successfully."
+      redirect_to root_path, notice: "Welcome! Your account has been created successfully."
     else
       render :new, status: :unprocessable_entity
     end

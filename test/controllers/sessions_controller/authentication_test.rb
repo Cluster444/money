@@ -25,6 +25,8 @@ class SessionsController::AuthenticationTest < ActionDispatch::IntegrationTest
 
     # Make another request with the cookie
     get root_url
+    assert_redirected_to organizations_url
+    follow_redirect!
     assert_response :success
   end
 
@@ -35,6 +37,8 @@ class SessionsController::AuthenticationTest < ActionDispatch::IntegrationTest
     assert_not_nil cookies[:session_id]
 
     get root_url
+    assert_redirected_to organizations_url
+    follow_redirect!
 
     # Verify we're authenticated (not redirected to login)
     assert_response :success
@@ -50,6 +54,8 @@ class SessionsController::AuthenticationTest < ActionDispatch::IntegrationTest
   test "should clear current session on logout" do
     post session_url, params: { email_address: @user.email_address, password: "password123" }
     get root_url
+    assert_redirected_to organizations_url
+    follow_redirect!
 
     # Verify we're authenticated
     assert_response :success

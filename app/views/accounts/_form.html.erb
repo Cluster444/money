@@ -11,7 +11,7 @@
 
 <div class="form__group">
   <%= form.label :name, class: "form__label" %>
-  <%= form.text_field :name, class: "form__input", placeholder: "e.g., Checking Account, Cash Wallet" %>
+  <%= form.text_field :name, class: "form__input", placeholder: "e.g., Checking Account, Cash Wallet", autocomplete: "off" %>
 </div>
 
 <div class="form__group">
@@ -22,12 +22,12 @@
 <div id="credit-card-fields" style="display: none;">
   <div class="form__group">
     <%= form.label :due_day, "Due Day (1-31)", class: "form__label" %>
-    <%= form.number_field :due_day, in: 1..31, class: "form__input", placeholder: "e.g., 15" %>
+    <%= form.number_field :due_day, in: 1..31, class: "form__input", placeholder: "e.g., 15", autocomplete: "off" %>
   </div>
 
   <div class="form__group">
     <%= form.label :statement_day, "Statement Day (1-31)", class: "form__label" %>
-    <%= form.number_field :statement_day, in: 1..31, class: "form__input", placeholder: "e.g., 1" %>
+    <%= form.number_field :statement_day, in: 1..31, class: "form__input", placeholder: "e.g., 1", autocomplete: "off" %>
   </div>
 </div>
 

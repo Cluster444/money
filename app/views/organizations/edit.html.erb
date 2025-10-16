@@ -1,0 +1,21 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Edit Organization</h1>
+  </div>
+
+  <div class="page__content">
+    <div class="page__card">
+      <%= form_with model: @organization, url: organization_path(@organization), method: :patch, class: "form" do |form| %>
+        <div class="form__field">
+          <%= form.label :name, class: "form__label" %>
+          <%= form.text_field :name, class: "form__input", required: true %>
+        </div>
+
+        <div class="form__actions">
+          <%= form.submit "Update Organization", class: "btn btn--primary" %>
+          <%= cancel_button organization_accounts_path(@organization) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
