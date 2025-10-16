@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  resources :users, only: [ :new, :create ]
   resources :accounts, only: [ :index, :new, :create, :show, :edit, :update ] do
     resources :adjustments, only: [ :index, :new, :create, :edit, :update, :destroy ]
   end

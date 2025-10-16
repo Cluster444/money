@@ -1,8 +1,8 @@
 class AccountsController < ApplicationController
   def index
-    @cash_accounts = Current.user.accounts.cash.order(:name)
-    @credit_card_accounts = Current.user.accounts.credit_card.order(:name)
-    @vendor_accounts = Current.user.accounts.vendor.order(:name)
+    @cash_accounts = Current.user.accounts.cash.includes(:debit_transfers, :credit_transfers, :debit_schedules, :credit_schedules).order(:name)
+    @credit_card_accounts = Current.user.accounts.credit_card.includes(:debit_transfers, :credit_transfers, :debit_schedules, :credit_schedules).order(:name)
+    @vendor_accounts = Current.user.accounts.vendor.includes(:debit_transfers, :credit_transfers, :debit_schedules, :credit_schedules).order(:name)
   end
 
   def new

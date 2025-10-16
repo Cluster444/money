@@ -23,6 +23,14 @@
   </head>
 
   <body>
+    <header class="app-header">
+      <div class="app-header__content">
+        <div class="app-header__brand">MONEY</div>
+        <% if Current.user %>
+          <%= link_to "Sign Out", session_path, data: { turbo_method: :delete }, class: "btn btn--secondary" %>
+        <% end %>
+      </div>
+    </header>
     <main class="container">
       <%= yield %>
     </main>

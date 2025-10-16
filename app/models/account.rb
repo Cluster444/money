@@ -169,11 +169,11 @@ class Account < ApplicationRecord
     end
 
     def pending_debits_total
-      debit_transfers.pending.sum(:amount)
+      debit_transfers.select(&:pending?).sum(&:amount)
     end
 
     def pending_credits_total
-      credit_transfers.pending.sum(:amount)
+      credit_transfers.select(&:pending?).sum(&:amount)
     end
 
     def planned_debits_total(on_date)

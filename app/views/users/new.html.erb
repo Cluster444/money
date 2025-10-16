@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Sign Up</h1>
+  </div>
+  <div class="page__content">
+    <div class="page__card">
+      <% if flash[:alert] %>
+        <%= tag.div(flash[:alert], class: "flash-message flash-alert") %>
+      <% end %>
+      <% if flash[:notice] %>
+        <%= tag.div(flash[:notice], class: "flash-message flash-notice") %>
+      <% end %>
+
+      <%= form_with model: @user, class: "form" do |form| %>
+        <% if form.object.errors.any? %>
+          <div class="form__errors">
+            <h3>There were errors with your submission:</h3>
+            <ul>
+              <% form.object.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form__group">
+          <%= form.label :first_name, class: "form__label" %>
+          <%= form.text_field :first_name, class: "form__input", placeholder: "First name", required: true %>
+        </div>
+
+        <div class="form__group">
+          <%= form.label :last_name, class: "form__label" %>
+          <%= form.text_field :last_name, class: "form__input", placeholder: "Last name", required: true %>
+        </div>
+
+        <div class="form__group">
+          <%= form.label :email_address, class: "form__label" %>
+          <%= form.email_field :email_address, class: "form__input", placeholder: "Email address", required: true %>
+        </div>
+
+        <div class="form__group">
+          <%= form.label :password, class: "form__label" %>
+          <%= form.password_field :password, class: "form__input", placeholder: "Password", required: true %>
+        </div>
+
+        <div class="form__group">
+          <%= form.label :password_confirmation, class: "form__label" %>
+          <%= form.password_field :password_confirmation, class: "form__input", placeholder: "Confirm password", required: true %>
+        </div>
+
+        <div class="form__actions">
+          <%= form.submit "Sign Up", class: "btn btn--primary" %>
+          <%= cancel_button new_session_path %>
+        </div>
+      <% end %>
+
+      <div class="form-link">
+        Have an account? <%= link_to "Sign In", new_session_path %>
+      </div>
+    </div>
+  </div>
+</div>

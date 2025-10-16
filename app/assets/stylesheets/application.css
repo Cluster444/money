@@ -13,11 +13,38 @@
 
 /* Additional base styles not covered by reset */
 
+/* App header */
+.app-header {
+  background-color: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header__content {
+  max-width: 80rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header__brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-1);
+  letter-spacing: 0.1em;
+}
+
 /* Single column layout container */
 .container {
   max-width: 80rem;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 65px);
   margin: 0 auto;
   padding: 2rem;
   background-color: var(--bg-2);
