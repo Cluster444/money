@@ -33,11 +33,17 @@
   align-items: center;
 }
 
+.app-header__left {
+  display: flex;
+  align-items: center;
+}
+
 .app-header__brand {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--text-1);
   letter-spacing: 0.1em;
+  margin-right: 2rem;
 }
 
 /* Single column layout container */
