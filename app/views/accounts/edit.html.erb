@@ -6,7 +6,7 @@
   <div class="page__content">
     <div class="page__card">
       <%= form_with model: @account, url: organization_account_path(current_organization, @account), method: :patch, class: "form" do |form| %>
-        <%= render 'form', form: form %>
+        <%= render 'edit_form', form: form %>
 
         <div class="form__actions">
           <%= form.submit "Update Account", class: "btn btn--primary" %>

@@ -164,7 +164,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "Edit Account"
     assert_select "form[action=?]", organization_account_path(account.organization, account)
     assert_select "input[name='account[name]'][value=?]", account.name
-    assert_select "select[name='account[kind]']"
+    # Edit form should not have kind select since it's immutable
+    assert_select "select[name='account[kind]']", count: 0
   end
 
   test "should update account" do
@@ -194,7 +195,9 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       post organization_accounts_url(@user.organizations.first), params: {
         account: {
           name: "Test Credit Card",
-          kind: "credit_card"
+          kind: "credit_card",
+          due_day: 15,
+          statement_day: 1
         }
       }
     end
@@ -204,6 +207,69 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     created_account = Account.last
     assert_equal "Test Credit Card", created_account.name
     assert_equal "credit_card", created_account.kind
+  end
+
+  test "should create credit card account with metadata and payment schedule" do
+    # Create a cash account first (required for schedule creation)
+    cash_account = Account.create!(
+      name: "Test Cash Account",
+      kind: "cash",
+      user: @user
+    )
+
+    assert_difference("Account.count", 1) do
+      assert_difference("Schedule.count", 1) do
+        post organization_accounts_url(@user.organizations.first), params: {
+          account: {
+            name: "Test Credit Card with Schedule",
+            kind: "credit_card",
+            due_day: "15",
+            statement_day: "1"
+          }
+        }
+      end
+    end
+
+    assert_redirected_to organization_accounts_url(@user.organizations.first)
+
+    created_account = Account.last
+    assert_equal "Test Credit Card with Schedule", created_account.name
+    assert_equal "credit_card", created_account.kind
+    assert_equal 15, created_account.due_day
+    assert_equal 1, created_account.statement_day
+
+    # Check that payment schedule was created
+    schedule = created_account.debit_schedules.first
+    assert_not_nil schedule
+    assert_equal "Payment for Test Credit Card with Schedule", schedule.name
+    assert_equal "month", schedule.period
+    assert_equal 1, schedule.frequency
+  end
+
+  test "should create credit card account with payment schedule" do
+    assert_difference("Account.count", 1) do
+      assert_difference("Schedule.count", 1) do
+        post organization_accounts_url(@user.organizations.first), params: {
+          account: {
+            name: "Test Credit Card With Schedule",
+            kind: "credit_card",
+            due_day: 15,
+            statement_day: 1
+          }
+        }
+      end
+    end
+
+    assert_redirected_to organization_accounts_url(@user.organizations.first)
+
+    created_account = Account.last
+    assert_equal "Test Credit Card With Schedule", created_account.name
+    assert_equal "credit_card", created_account.kind
+    assert_equal 15, created_account.due_day
+    assert_equal 1, created_account.statement_day
+
+    # Check that payment schedule was created
+    assert_equal 1, created_account.debit_schedules.count
   end
 
   test "should show credit card account with payment schedule" do
@@ -312,6 +378,35 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Verify it's actually 1 day before statement date
     expected_day_before_statement = credit_card.next_statement_date - 1.day
     assert_equal expected_day_before_statement, expected_payment_date
+  end
+
+  test "should not create credit card account with invalid due_day" do
+    assert_no_difference("Account.count") do
+      post organization_accounts_url(@user.organizations.first), params: {
+        account: {
+          name: "Invalid Credit Card",
+          kind: "credit_card",
+          due_day: 32,
+          statement_day: 1
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should not create credit card account with missing statement_day" do
+    assert_no_difference("Account.count") do
+      post organization_accounts_url(@user.organizations.first), params: {
+        account: {
+          name: "Incomplete Credit Card",
+          kind: "credit_card",
+          due_day: 15
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
   end
 
   private

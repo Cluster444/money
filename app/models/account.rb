@@ -6,6 +6,19 @@ class Account < ApplicationRecord
 
   validates :kind, presence: true, inclusion: { in: kinds.values }
   validates :name, presence: true
+
+  # Credit card specific validations
+  validates :due_day, presence: true, numericality: {
+    only_integer: true,
+    greater_than_or_equal_to: 1,
+    less_than_or_equal_to: 31
+  }, if: :credit_card?
+
+  validates :statement_day, presence: true, numericality: {
+    only_integer: true,
+    greater_than_or_equal_to: 1,
+    less_than_or_equal_to: 31
+  }, if: :credit_card?
   validate :cash_account_maintain_positive_posted_balance
   validate :credit_card_metadata_validation
 
@@ -81,26 +94,46 @@ class Account < ApplicationRecord
   end
 
   def posted_balance=(amount)
-    amount = amount.to_d
-    raise ArgumentError, "Amount must be positive or zero" if amount < 0
+    if amount.present?
+      # Convert to cents and store as integer
+      amount_in_cents = (amount.to_f * 100).round
 
-    # Convert to cents (multiply by 100) since database stores integers
-    amount_in_cents = (amount * 100).to_i
+      if amount_in_cents < 0
+        raise ArgumentError, "Amount must be positive or zero."
+      end
 
-    if cash? || vendor?
-      self.debits = amount_in_cents
-    else
-      self.credits = amount_in_cents
+      case kind
+      when "cash", "vendor"
+        self.debits = amount_in_cents
+        self.credits = 0
+      when "credit_card"
+        self.credits = amount_in_cents
+        self.debits = 0
+      end
     end
   end
 
   def due_day
-    metadata["due_day"]&.to_i
+    metadata["due_day"]&.to_i if credit_card?
+  end
+
+  def due_day=(value)
+    if credit_card?
+      self.metadata = (metadata || {}).merge("due_day" => value)
+    end
   end
 
   def statement_day
-    metadata["statement_day"]&.to_i
+    metadata["statement_day"]&.to_i if credit_card?
   end
+
+  def statement_day=(value)
+    if credit_card?
+      self.metadata = (metadata || {}).merge("statement_day" => value)
+    end
+  end
+
+
 
   def next_statement_date
     return nil unless statement_day

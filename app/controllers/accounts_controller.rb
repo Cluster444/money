@@ -44,6 +44,13 @@ class AccountsController < ApplicationController
   private
 
   def account_params
-    params.expect(account: [ :name, :kind, :posted_balance, metadata: {} ])
+    base_params = [ :name, :kind, :posted_balance ]
+
+    # Add credit card specific fields if it's a credit card
+    if params[:account][:kind] == "credit_card"
+      base_params += [ :due_day, :statement_day ]
+    end
+
+    params.expect(account: base_params)
   end
 end

@@ -505,4 +505,85 @@ test "should handle edge case with same day as schedule start" do
 
     assert_equal 150050, cash_account.debits
   end
+
+  # Credit card field validation tests
+  test "should validate due_day presence for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:due_day], "can't be blank"
+  end
+
+  test "should validate statement_day presence for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:statement_day], "can't be blank"
+  end
+
+  test "should validate due_day numericality for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.due_day = "invalid"
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:due_day], "must be greater than or equal to 1"
+  end
+
+  test "should validate statement_day numericality for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.statement_day = "invalid"
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:statement_day], "must be greater than or equal to 1"
+  end
+
+  test "should validate due_day range for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.due_day = 32
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:due_day], "must be less than or equal to 31"
+  end
+
+  test "should validate statement_day range for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.statement_day = 0
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:statement_day], "must be greater than or equal to 1"
+  end
+
+  test "should validate valid credit card fields" do
+    credit_card = Account.new(
+      name: "Test Credit Card",
+      kind: "credit_card",
+      due_day: 15,
+      statement_day: 1,
+      organization: organizations(:lazaro_personal)
+    )
+
+    assert credit_card.valid?
+  end
+
+  test "should not validate due_day for non-credit card accounts" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.valid?
+
+    assert_not_includes cash_account.errors[:due_day], "can't be blank"
+  end
+
+  test "should not validate statement_day for non-credit card accounts" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.valid?
+
+    assert_not_includes cash_account.errors[:statement_day], "can't be blank"
+  end
 end

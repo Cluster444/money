@@ -5,14 +5,11 @@
 
   <div class="page__content">
     <div class="page__card">
-      <%= form_with model: @account, url: organization_accounts_path(current_organization), class: "form" do |form| %>
-        <%= render 'form', form: form %>
+      <%= render 'form' %>
 
-        <div class="form__actions">
-          <%= form.submit "Create Account", class: "btn btn--primary" %>
-          <%= cancel_button organization_accounts_path(current_organization) %>
-        </div>
-      <% end %>
+      <div class="form__actions">
+        <%= cancel_button organization_accounts_path(current_organization) %>
+      </div>
     </div>
   </div>
 </div>

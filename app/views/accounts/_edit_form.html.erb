@@ -1,0 +1,32 @@
+<% if @account.errors.any? %>
+  <div class="form__errors">
+    <h4><%= pluralize(@account.errors.count, "error") %> prohibited this account from being saved:</h4>
+    <ul>
+      <% @account.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="form__group">
+  <%= form.label :name, class: "form__label" %>
+  <%= form.text_field :name, class: "form__input", placeholder: "e.g., Checking Account, Cash Wallet", autocomplete: "off" %>
+</div>
+
+<div class="form__group">
+  <label class="form__label">Account Type</label>
+  <div class="form__readonly">
+    <%= @account.kind.humanize %>
+  </div>
+</div>
+
+<% if @account.credit_card? && @account.due_day && @account.statement_day %>
+  <div class="form__group">
+    <label class="form__label">Credit Card Details</label>
+    <div class="form__readonly">
+      Due Day: <%= @account.due_day %><br>
+      Statement Day: <%= @account.statement_day %>
+    </div>
+  </div>
+<% end %>

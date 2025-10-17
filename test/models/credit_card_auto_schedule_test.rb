@@ -45,30 +45,30 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
     assert_equal 0, vendor_account.debit_schedules.count
   end
 
-  test "credit card without due_day does not create schedule" do
-    credit_card = Account.create!(
-      user: @user,
-      name: "Visa",
-      kind: "credit_card",
-      debits: 0,
-      credits: 500,
-      metadata: { statement_day: 1 }
-    )
-
-    assert_equal 0, credit_card.debit_schedules.count
+  test "credit card without due_day cannot be created" do
+    assert_raises(ActiveRecord::RecordInvalid) do
+      Account.create!(
+        user: @user,
+        name: "Visa",
+        kind: "credit_card",
+        debits: 0,
+        credits: 500,
+        statement_day: 1
+      )
+    end
   end
 
-  test "credit card without statement_day does not create schedule" do
-    credit_card = Account.create!(
-      user: @user,
-      name: "Visa",
-      kind: "credit_card",
-      debits: 0,
-      credits: 500,
-      metadata: { due_day: 15 }
-    )
-
-    assert_equal 0, credit_card.debit_schedules.count
+  test "credit card without statement_day cannot be created" do
+    assert_raises(ActiveRecord::RecordInvalid) do
+      Account.create!(
+        user: @user,
+        name: "Visa",
+        kind: "credit_card",
+        debits: 0,
+        credits: 500,
+        due_day: 15
+      )
+    end
   end
 
   test "credit card without cash account does not create schedule" do

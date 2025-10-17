@@ -15,29 +15,29 @@ class CreditCardTest < ActiveSupport::TestCase
     assert_equal 0, accounts(:lazaro_credit_card).posted_balance
   end
 
-  test "credit card should validate due_day in metadata" do
-    accounts(:lazaro_credit_card).metadata = { due_day: 0 }
+  test "credit card should validate due_day field" do
+    accounts(:lazaro_credit_card).due_day = 0
     assert_not accounts(:lazaro_credit_card).valid?
-    assert_includes accounts(:lazaro_credit_card).errors[:metadata], "due_day must be between 1 and 31"
+    assert_includes accounts(:lazaro_credit_card).errors[:due_day], "must be greater than or equal to 1"
 
-    accounts(:lazaro_credit_card).metadata = { due_day: 32 }
+    accounts(:lazaro_credit_card).due_day = 32
     assert_not accounts(:lazaro_credit_card).valid?
-    assert_includes accounts(:lazaro_credit_card).errors[:metadata], "due_day must be between 1 and 31"
+    assert_includes accounts(:lazaro_credit_card).errors[:due_day], "must be less than or equal to 31"
 
-    accounts(:lazaro_credit_card).metadata = { due_day: 15 }
+    accounts(:lazaro_credit_card).due_day = 15
     assert accounts(:lazaro_credit_card).valid?
   end
 
-  test "credit card should validate statement_day in metadata" do
-    accounts(:lazaro_credit_card).metadata = { statement_day: 0 }
+  test "credit card should validate statement_day field" do
+    accounts(:lazaro_credit_card).statement_day = 0
     assert_not accounts(:lazaro_credit_card).valid?
-    assert_includes accounts(:lazaro_credit_card).errors[:metadata], "statement_day must be between 1 and 31"
+    assert_includes accounts(:lazaro_credit_card).errors[:statement_day], "must be greater than or equal to 1"
 
-    accounts(:lazaro_credit_card).metadata = { statement_day: 32 }
+    accounts(:lazaro_credit_card).statement_day = 32
     assert_not accounts(:lazaro_credit_card).valid?
-    assert_includes accounts(:lazaro_credit_card).errors[:metadata], "statement_day must be between 1 and 31"
+    assert_includes accounts(:lazaro_credit_card).errors[:statement_day], "must be less than or equal to 31"
 
-    accounts(:lazaro_credit_card).metadata = { statement_day: 1 }
+    accounts(:lazaro_credit_card).statement_day = 1
     assert accounts(:lazaro_credit_card).valid?
   end
 
@@ -130,13 +130,17 @@ class CreditCardTest < ActiveSupport::TestCase
     assert_equal new_credit_card, schedule.relative_account
   end
 
-  test "should not create payment schedule if missing due_day or statement_day" do
-    assert_no_difference "Schedule.count" do
-      organizations(:lazaro_personal).accounts.create!(
-        name: "Incomplete Credit Card",
-        kind: "credit_card",
-        metadata: { due_day: 15 } # Missing statement_day
-      )
+  test "should not create credit card if missing due_day or statement_day" do
+    assert_no_difference "Account.count" do
+      assert_no_difference "Schedule.count" do
+        assert_raises(ActiveRecord::RecordInvalid) do
+          organizations(:lazaro_personal).accounts.create!(
+            name: "Incomplete Credit Card",
+            kind: "credit_card",
+            due_day: 15 # Missing statement_day
+          )
+        end
+      end
     end
   end
 

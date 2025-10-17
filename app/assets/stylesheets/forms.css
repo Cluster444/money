@@ -83,6 +83,17 @@
   font-size: 0.85rem;
 }
 
+/* Readonly field styles */
+.form .form__readonly {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-1);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: var(--bg-2);
+  color: var(--font-2);
+  line-height: 1.4;
+}
+
 /* Legacy form styles (from original form.css) - consider migrating these */
 .form-container {
   padding: 2rem;
