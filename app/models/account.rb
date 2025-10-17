@@ -80,6 +80,20 @@ class Account < ApplicationRecord
     )
   end
 
+  def posted_balance=(amount)
+    amount = amount.to_d
+    raise ArgumentError, "Amount must be positive or zero" if amount < 0
+
+    # Convert to cents (multiply by 100) since database stores integers
+    amount_in_cents = (amount * 100).to_i
+
+    if cash? || vendor?
+      self.debits = amount_in_cents
+    else
+      self.credits = amount_in_cents
+    end
+  end
+
   def due_day
     metadata["due_day"]&.to_i
   end

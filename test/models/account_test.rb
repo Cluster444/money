@@ -419,4 +419,90 @@ test "should handle edge case with same day as schedule start" do
       @account.destroy
     end
   end
+
+  # posted_balance= setter tests
+  test "should set initial balance for cash account" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.posted_balance = 1000
+
+    assert_equal 100000, cash_account.debits
+    assert_equal 0, cash_account.credits
+  end
+
+  test "should set initial balance for vendor account" do
+    vendor_account = Account.new(name: "Test Vendor", kind: "vendor", organization: organizations(:lazaro_personal))
+
+    vendor_account.posted_balance = 500
+
+    assert_equal 50000, vendor_account.debits
+    assert_equal 0, vendor_account.credits
+  end
+
+  test "should set initial balance for credit card account" do
+    credit_card_account = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+
+    credit_card_account.posted_balance = 2000
+
+    assert_equal 0, credit_card_account.debits
+    assert_equal 200000, credit_card_account.credits
+  end
+
+  test "should allow zero initial balance" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.posted_balance = 0
+
+    assert_equal 0, cash_account.debits
+    assert_equal 0, cash_account.credits
+  end
+
+  test "should reject negative initial balance" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    assert_raises(ArgumentError, "Amount must be positive or zero") do
+      cash_account.posted_balance = -100
+    end
+  end
+
+  test "should work with integer amounts" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.posted_balance = 12345
+
+    assert_equal 1234500, cash_account.debits
+  end
+
+  test "should work with float amounts that are whole numbers" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.posted_balance = 1000.0
+
+    assert_equal 100000, cash_account.debits
+  end
+
+  test "should preserve existing balance when setting to same amount" do
+    cash_account = accounts(:lazaro_cash)
+    original_debits = cash_account.debits
+
+    cash_account.posted_balance = original_debits
+
+    assert_equal original_debits, cash_account.debits
+  end
+
+  test "should override existing balance when setting new amount" do
+    cash_account = accounts(:lazaro_cash)
+
+    cash_account.posted_balance = 9999
+
+    assert_equal 999900, cash_account.debits
+  end
+
+  test "should handle string input for posted_balance" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.posted_balance = "1500.50"
+
+    assert_equal 150050, cash_account.debits
+  end
 end

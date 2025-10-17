@@ -44,6 +44,6 @@ class AccountsController < ApplicationController
   private
 
   def account_params
-    params.expect(account: [ :name, :kind, metadata: {} ])
+    params.expect(account: [ :name, :kind, :posted_balance, metadata: {} ])
   end
 end
