@@ -8,4 +8,9 @@
   --border-1: oklch(35% 0.01 50);
   --border-2: oklch(45% 0.01 50);
   --link: oklch(85% 0.02 70);
+  
+  /* Animation speeds */
+  --speed-fast: 100ms;
+  --speed-normal: 300ms;
+  --speed-slow: 500ms;
 }

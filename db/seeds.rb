@@ -11,12 +11,8 @@ return unless Rails.env.development?
 #   end
 
 # Clear existing data in the correct order to avoid foreign key constraints
-Transfer.destroy_all
-Schedule.destroy_all
 Account.destroy_all
-
-# Session.destroy_all
-# User.destroy_all
+User.destroy_all if ENV["DESTROY_ALL"].present?
 
 ApplicationRecord.transaction do
   # Create test user

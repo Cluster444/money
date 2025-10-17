@@ -1,18 +1,44 @@
-<% if defined?(current_organization) && current_organization && other_organizations.any? %>
-  <div data-controller="org-switcher" class="mb-4">
-    <label for="org-switcher-select" class="block text-sm font-medium text-gray-700 mb-2">
-      Switch Organization
-    </label>
-    <select 
-      id="org-switcher-select" 
-      data-org-switcher-target="select"
-      data-action="change->org-switcher#change"
-      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+<% if defined?(current_organization) && current_organization %>
+  <div data-controller="org-switcher" class="org-switcher mb-4">
+    <button 
+      data-org-switcher-target="button"
+      data-action="click->org-switcher#toggle"
+      class="org-switcher__button"
+      type="button"
+      aria-haspopup="listbox"
+      aria-expanded="false"
     >
-      <option value=""><%= current_organization.name %> (Current)</option>
-      <% other_organizations.each do |org| %>
-        <option value="<%= org.id %>"><%= org.name %></option>
+      <span class="org-switcher__current-name"><%= current_organization.name %></span>
+      <span class="org-switcher__chevron" data-org-switcher-target="chevron">▼</span>
+    </button>
+    
+    <div 
+      data-org-switcher-target="dropdown"
+      class="org-switcher__dropdown"
+      role="listbox"
+      aria-label="Organizations"
+    >
+      <% if other_organizations.any? %>
+        <% other_organizations.each do |org| %>
+          <a 
+            href="/organizations/<%= org.id %>/accounts"
+            class="org-switcher__option"
+            role="option"
+            data-org-switcher-target="option"
+            data-action="click->org-switcher#select"
+            data-org-id="<%= org.id %>"
+          >
+            <%= org.name %>
+          </a>
+        <% end %>
+      <% else %>
+        <div class="org-switcher__empty">
+          No other organizations
+        </div>
       <% end %>
-    </select>
+    </div>
+    
+    <%= link_to "+ New Organization", new_organization_path, 
+        class: "org-switcher__new-org" %>
   </div>
 <% end %>
