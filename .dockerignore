@@ -49,3 +49,13 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+/.claude
+/.opencode
+/.ruby-lsp
+/.gitattributes
+/.rubocop.yml
+/.ruby-version
+*.md
+/infra
+/tmp/cache

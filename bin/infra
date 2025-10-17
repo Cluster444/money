@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+export AWS_PROFILE=chris
+source .env
+
+bin/sso-login
+exec terraform -chdir=./infra "$@"

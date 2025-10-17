@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+export AWS_PROFILE=chris
+source .env
+
+# Check if already authenticated
+if aws sts get-caller-identity >/dev/null 2>&1; then
+  echo "Already authenticated with AWS"
+else
+  # Try AWS SSO login using standard AWS CLI
+  echo "Attempting AWS SSO login..."
+  if ! aws sso login; then
+    echo "Error: AWS SSO login failed"
+    exit 1
+  fi
+
+  # Verify authentication worked after login
+  if ! aws sts get-caller-identity >/dev/null 2>&1; then
+    echo "Error: AWS authentication failed after SSO login"
+    exit 1
+  fi
+fi
