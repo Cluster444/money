@@ -197,7 +197,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
           name: "Test Credit Card",
           kind: "credit_card",
           due_day: 15,
-          statement_day: 1
+          statement_day: 1,
+          credit_limit: 3000
         }
       }
     end
@@ -224,7 +225,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
             name: "Test Credit Card with Schedule",
             kind: "credit_card",
             due_day: "15",
-            statement_day: "1"
+            statement_day: "1",
+            credit_limit: "4000"
           }
         }
       end
@@ -254,7 +256,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
             name: "Test Credit Card With Schedule",
             kind: "credit_card",
             due_day: 15,
-            statement_day: 1
+            statement_day: 1,
+            credit_limit: 5000
           }
         }
       end
@@ -298,11 +301,14 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create payment schedule when creating credit card with metadata" do
+    organization = @user.organizations.first
+
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account for Schedule",
       kind: "cash",
-      user: @user
+      user: @user,
+      organization: organization
     )
 
     assert_difference("Schedule.count", 1) do
@@ -311,7 +317,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
         name: "Test Credit Card with Schedule",
         kind: "credit_card",
         user: @user,
-        metadata: { "due_day": 15, "statement_day": 1 }
+        organization: organization,
+        metadata: { "due_day": 15, "statement_day": 1, "credit_limit": 6000 }
       )
     end
 
@@ -322,11 +329,14 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "credit card schedule creation works with frequency" do
+    organization = @user.organizations.first
+
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account",
       kind: "cash",
-      user: @user
+      user: @user,
+      organization: organization
     )
 
     # Create a credit card account with metadata that should trigger schedule creation
@@ -334,7 +344,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       name: "Test Credit Card",
       kind: "credit_card",
       user: @user,
-      metadata: { "due_day": 15, "statement_day": 1 }
+      organization: organization,
+      metadata: { "due_day": 15, "statement_day": 1, "credit_limit": 7000 }
     )
 
     # Check if schedule was created
@@ -353,11 +364,14 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "credit card payment schedule is set for day before statement date" do
+    organization = @user.organizations.first
+
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account",
       kind: "cash",
-      user: @user
+      user: @user,
+      organization: organization
     )
 
     # Create a credit card with statement day 15 and due day 25
@@ -365,7 +379,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       name: "Test Credit Card",
       kind: "credit_card",
       user: @user,
-      metadata: { "due_day": 25, "statement_day": 15 }
+      organization: organization,
+      metadata: { "due_day": 25, "statement_day": 15, "credit_limit": 8000 }
     )
 
     schedule = credit_card.debit_schedules.first

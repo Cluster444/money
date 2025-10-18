@@ -48,7 +48,7 @@ class AccountsController < ApplicationController
 
     # Add credit card specific fields if it's a credit card
     if params[:account][:kind] == "credit_card"
-      base_params += [ :due_day, :statement_day ]
+      base_params += [ :due_day, :statement_day, :credit_limit ]
     end
 
     params.expect(account: base_params)

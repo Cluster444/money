@@ -565,6 +565,7 @@ test "should handle edge case with same day as schedule start" do
       kind: "credit_card",
       due_day: 15,
       statement_day: 1,
+      credit_limit: 5000,
       organization: organizations(:lazaro_personal)
     )
 
@@ -585,5 +586,74 @@ test "should handle edge case with same day as schedule start" do
     cash_account.valid?
 
     assert_not_includes cash_account.errors[:statement_day], "can't be blank"
+  end
+
+  test "should validate credit_limit presence for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:credit_limit], "can't be blank"
+  end
+
+  test "should validate credit_limit numericality for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.credit_limit = "invalid"
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:credit_limit], "must be greater than 0"
+  end
+
+  test "should validate credit_limit greater than 0 for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.credit_limit = 0
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:credit_limit], "must be greater than 0"
+  end
+
+  test "should validate credit_limit greater than 0 for negative values" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+    credit_card.credit_limit = -100
+
+    credit_card.valid?
+
+    assert_includes credit_card.errors[:credit_limit], "must be greater than 0"
+  end
+
+  test "should validate valid credit card fields with credit_limit" do
+    credit_card = Account.new(
+      name: "Test Credit Card",
+      kind: "credit_card",
+      due_day: 15,
+      statement_day: 1,
+      credit_limit: 5000,
+      organization: organizations(:lazaro_personal)
+    )
+
+    assert credit_card.valid?
+  end
+
+  test "should not validate credit_limit for non-credit card accounts" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    cash_account.valid?
+
+    assert_not_includes cash_account.errors[:credit_limit], "can't be blank"
+  end
+
+  test "should get and set credit_limit for credit card" do
+    credit_card = Account.new(name: "Test Credit Card", kind: "credit_card", organization: organizations(:lazaro_personal))
+
+    credit_card.credit_limit = 2500.50
+    assert_equal 2500.50, credit_card.credit_limit
+  end
+
+  test "should return nil for credit_limit on non-credit card" do
+    cash_account = Account.new(name: "Test Cash", kind: "cash", organization: organizations(:lazaro_personal))
+
+    assert_nil cash_account.credit_limit
   end
 end

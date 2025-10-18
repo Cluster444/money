@@ -119,7 +119,7 @@ class CreditCardTest < ActiveSupport::TestCase
       new_credit_card = organizations(:lazaro_personal).accounts.create!(
         name: "Auto Credit Card",
         kind: "credit_card",
-        metadata: { due_day: 15, statement_day: 1 }
+        metadata: { due_day: 15, statement_day: 1, credit_limit: 3000 }
       )
     end
     # Schedule is created in after_create callback, so we check after creation
@@ -152,7 +152,7 @@ class CreditCardTest < ActiveSupport::TestCase
       organizations(:lazaro_personal).accounts.create!(
         name: "No Cash Credit Card",
         kind: "credit_card",
-        metadata: { due_day: 15, statement_day: 1 }
+        metadata: { due_day: 15, statement_day: 1, credit_limit: 2000 }
       )
     end
   end

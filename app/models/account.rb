@@ -19,8 +19,11 @@ class Account < ApplicationRecord
     greater_than_or_equal_to: 1,
     less_than_or_equal_to: 31
   }, if: :credit_card?
+
+  validates :credit_limit, presence: true, numericality: {
+    greater_than: 0
+  }, if: :credit_card?
   validate :cash_account_maintain_positive_posted_balance
-  validate :credit_card_metadata_validation
 
   after_create :create_payment_schedule_for_credit_card
 
@@ -133,6 +136,16 @@ class Account < ApplicationRecord
     end
   end
 
+  def credit_limit
+    metadata["credit_limit"]&.to_f if credit_card?
+  end
+
+  def credit_limit=(value)
+    if credit_card?
+      self.metadata = (metadata || {}).merge("credit_limit" => value)
+    end
+  end
+
 
 
   def next_statement_date
@@ -211,22 +224,17 @@ class Account < ApplicationRecord
     end
 
     def credit_card_metadata_validation
-      return unless credit_card?
+      nil unless credit_card?
 
-      if due_day && (due_day < 1 || due_day > 31)
-        errors.add(:metadata, "due_day must be between 1 and 31")
-      end
-
-      if statement_day && (statement_day < 1 || statement_day > 31)
-        errors.add(:metadata, "statement_day must be between 1 and 31")
-      end
+      # This method can be used for additional metadata validations
+      # that aren't covered by the individual field validations
     end
 
     def create_payment_schedule_for_credit_card
       return unless credit_card?
       return unless due_day && statement_day
 
-      cash_account = user.accounts.cash.first
+      cash_account = organization.accounts.cash.first
       return unless cash_account
 
       Schedule.create!(

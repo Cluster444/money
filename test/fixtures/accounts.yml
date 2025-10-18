@@ -82,5 +82,5 @@ lazaro_credit_card:
   active: true
   debits: 0
   credits: 0
-  metadata: { "due_day": 15, "statement_day": 1 }
+  metadata: { "due_day": 15, "statement_day": 1, "credit_limit": 5000 }
   organization: lazaro_personal

@@ -379,7 +379,7 @@ test "post! should be transactional" do
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
-      metadata: { due_day: 15, statement_day: 1 }
+      metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
 
@@ -404,7 +404,7 @@ test "post! should be transactional" do
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
-      metadata: { due_day: 15, statement_day: 1 }
+      metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
 
@@ -428,7 +428,7 @@ test "post! should be transactional" do
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
-      metadata: { due_day: 15, statement_day: 1 }
+      metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
 
@@ -459,7 +459,7 @@ test "post! should be transactional" do
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
       kind: "credit_card",
-      metadata: { due_day: 15, statement_day: 1 }
+      metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
 
