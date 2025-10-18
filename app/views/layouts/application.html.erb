@@ -26,7 +26,7 @@
     <header class="app-header">
       <div class="app-header__content">
         <div class="app-header__left">
-          <div class="app-header__brand">MONEY</div>
+          <%= link_to "MONEY", root_path, class: "app-header__brand" %>
           <% if request.path.match?(/^\/organizations\/\d+\//) %>
             <%= render "widgets/org_switcher" %>
           <% end %>
