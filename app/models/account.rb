@@ -38,6 +38,9 @@ class Account < ApplicationRecord
   scope :vendor, -> { where(kind: :vendor) }
   scope :credit_card, -> { where(kind: :credit_card) }
 
+  scope :with_transfers, -> { includes(:debit_transfers, :credit_transfers) }
+  scope :with_schedules, -> { includes(:debit_schedules, :credit_schedules) }
+
   def transfers
     Transfer.where("debit_account_id = ? OR credit_account_id = ?", id, id)
   end

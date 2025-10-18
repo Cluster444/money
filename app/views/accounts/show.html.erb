@@ -43,20 +43,14 @@
         </div>
       </div>
 
-      <% if @account.credit_card? && (@account.due_day || @account.statement_day) %>
+      <% if @account.credit_card? && (@account.next_statement_date || @account.next_due_date || @account.credit_limit) %>
         <div class="accounts-show__metadata">
           <h3>Credit Card Information</h3>
           <div class="accounts-show__metadata-grid">
-            <% if @account.statement_day %>
+            <% if @account.credit_limit %>
               <div class="accounts-show__metadata-item">
-                <span class="accounts-show__metadata-key">Statement Day:</span>
-                <span class="accounts-show__metadata-value"><%= @account.statement_day %></span>
-              </div>
-            <% end %>
-            <% if @account.due_day %>
-              <div class="accounts-show__metadata-item">
-                <span class="accounts-show__metadata-key">Due Day:</span>
-                <span class="accounts-show__metadata-value"><%= @account.due_day %></span>
+                <span class="accounts-show__metadata-key">Credit Limit:</span>
+                <span class="accounts-show__metadata-value"><%= number_to_currency(@account.credit_limit / 100.0) %></span>
               </div>
             <% end %>
             <% if @account.next_statement_date %>

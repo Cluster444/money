@@ -38,7 +38,8 @@ ApplicationRecord.transaction do
     name: "Visa Card",
     metadata: {
       due_day: 10,
-      statement_day: 15
+      statement_day: 15,
+      credit_limit: 10_000_00
     }
   )
 

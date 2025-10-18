@@ -190,6 +190,61 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_equal original_name, account.name
   end
 
+  test "should update credit card account" do
+    credit_card = accounts(:lazaro_credit_card)
+
+    patch organization_account_url(credit_card.organization, credit_card), params: {
+      account: {
+        name: "Updated Credit Card Name",
+        due_day: 20,
+        statement_day: 5,
+        credit_limit: 6000
+      }
+    }
+    assert_redirected_to organization_account_url(credit_card.organization, credit_card)
+    assert_equal "Account was successfully updated.", flash[:notice]
+
+    credit_card.reload
+    assert_equal "Updated Credit Card Name", credit_card.name
+    assert_equal 20, credit_card.due_day
+    assert_equal 5, credit_card.statement_day
+    assert_equal 6000, credit_card.credit_limit
+  end
+
+  test "should not update credit card account with invalid due_day" do
+    credit_card = accounts(:lazaro_credit_card)
+    original_due_day = credit_card.due_day
+
+    patch organization_account_url(credit_card.organization, credit_card), params: {
+      account: {
+        due_day: 32
+      }
+    }
+    assert_response :unprocessable_entity
+
+    credit_card.reload
+    assert_equal original_due_day, credit_card.due_day
+  end
+
+  test "should update credit card account name only" do
+    credit_card = accounts(:lazaro_credit_card)
+    original_metadata = credit_card.metadata.dup
+
+    patch organization_account_url(credit_card.organization, credit_card), params: {
+      account: {
+        name: "Just Name Change"
+      }
+    }
+    assert_redirected_to organization_account_url(credit_card.organization, credit_card)
+
+    credit_card.reload
+    assert_equal "Just Name Change", credit_card.name
+    # Metadata should remain unchanged
+    assert_equal original_metadata["due_day"], credit_card.due_day
+    assert_equal original_metadata["statement_day"], credit_card.statement_day
+    assert_equal original_metadata["credit_limit"], credit_card.credit_limit
+  end
+
   test "should create credit card account" do
     assert_difference("Account.count", 1) do
       post organization_accounts_url(@user.organizations.first), params: {
@@ -285,10 +340,8 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     # Check that metadata is displayed
     assert_select ".accounts-show__metadata" do
-      assert_select ".accounts-show__metadata-key", "Due Day:"
-      assert_select ".accounts-show__metadata-value", "15"
-      assert_select ".accounts-show__metadata-key", "Statement Day:"
-      assert_select ".accounts-show__metadata-value", "1"
+      assert_select ".accounts-show__metadata-key", "Credit Limit:"
+      assert_select ".accounts-show__metadata-value", "$50.00"
     end
 
     # Check that debit schedules section is present (credit card payment schedule)
