@@ -5,7 +5,42 @@
 
   <div class="page__content">
     <div class="page__card">
-      <%= render 'form' %>
+      <%= form_with model: @account, url: organization_accounts_path(current_organization), class: "form", data: { controller: "account-form" } do |form| %>
+        <% if @account.errors.any? %>
+          <div class="form__errors">
+            <h4><%= pluralize(@account.errors.count, "error") %> prohibited this account from being saved:</h4>
+            <ul>
+              <% @account.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form__group">
+          <%= form.label :name, class: "form__label" %>
+          <%= form.text_field :name, class: "form__input", placeholder: "e.g., Checking Account, Cash Wallet", autocomplete: "off" %>
+        </div>
+
+        <div class="form__group">
+          <%= form.label :posted_balance, "Initial Balance", class: "form__label" %>
+          <%= form.number_field :posted_balance, step: "0.01", min: "0", class: "form__input", placeholder: "e.g., 1000.00", autocomplete: "off" %>
+          <small class="form__help">For cash/vendor accounts this sets the initial debit amount. For credit cards this sets the initial credit amount.</small>
+        </div>
+
+        <div class="form__group">
+          <%= form.label :kind, class: "form__label" %>
+          <%= form.select :kind, options_for_select(Account.kinds.keys.map { |k| [k.humanize, k] }, @account.kind), {}, 
+              class: "form__select", 
+              data: { action: "change->account-form#kindChanged", "account-form-target": "kindSelect" } %>
+        </div>
+
+        <div data-account-form-target="creditCardFields" style="display: none;">
+          <%= render 'credit_card_fields', form: form %>
+        </div>
+
+        <%= form.submit "Create Account", class: "btn btn--primary" %>
+      <% end %>
 
       <div class="form__actions">
         <%= cancel_button organization_accounts_path(current_organization) %>

@@ -1,0 +1,14 @@
+<div class="form__group">
+  <%= form.label :due_day, "Due Day (1-31)", class: "form__label" %>
+  <%= form.number_field :due_day, in: 1..31, class: "form__input", placeholder: "e.g., 15", autocomplete: "off" %>
+</div>
+
+<div class="form__group">
+  <%= form.label :statement_day, "Statement Day (1-31)", class: "form__label" %>
+  <%= form.number_field :statement_day, in: 1..31, class: "form__input", placeholder: "e.g., 1", autocomplete: "off" %>
+</div>
+
+<div class="form__group">
+  <%= form.label :credit_limit, "Credit Limit", class: "form__label" %>
+  <%= form.number_field :credit_limit, step: "0.01", min: "0.01", class: "form__input", placeholder: "e.g., 5000.00", autocomplete: "off" %>
+</div>
