@@ -1,0 +1,220 @@
+/* Transfers Index Page */
+
+.transfers-index__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 1rem;
+}
+
+.transfers-index__card {
+  background-color: var(--bg-1);
+  border: 1px solid var(--border-1);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: border-color var(--speed-fast) ease, box-shadow var(--speed-fast) ease;
+}
+
+.transfers-index__card:hover {
+  border-color: var(--link);
+  box-shadow: 0 2px 4px oklch(from var(--bg-3) / 0.1);
+}
+
+.transfers-index__card--pending {
+  border-left: 4px solid var(--warning);
+}
+
+.transfers-index__card--posted {
+  border-left: 4px solid var(--success);
+}
+
+.transfers-index__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.transfers-index__card-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--font-1);
+  margin: 0;
+}
+
+.transfers-index__card-state {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.transfers-index__card-state--pending {
+  background-color: oklch(from var(--warning) / 0.1);
+  color: var(--warning);
+}
+
+.transfers-index__card-state--posted {
+  background-color: oklch(from var(--success) / 0.1);
+  color: var(--success);
+}
+
+.transfers-index__transfer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transfers-index__account {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transfers-index__account-label {
+  font-size: 0.875rem;
+  color: var(--font-2);
+  font-weight: 500;
+  min-width: 40px;
+}
+
+.transfers-index__account-name {
+  font-size: 0.875rem;
+  color: var(--font-1);
+  font-weight: 500;
+}
+
+.transfers-index__date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transfers-index__date-label {
+  font-size: 0.875rem;
+  color: var(--font-2);
+  font-weight: 500;
+  min-width: 70px;
+}
+
+.transfers-index__date-value {
+  font-size: 0.875rem;
+  color: var(--font-1);
+}
+
+/* Transfer Show Page */
+
+.transfer-show {
+  background-color: var(--bg-1);
+  border: 1px solid var(--border-1);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.transfer-show__header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-1);
+}
+
+.transfer-show__amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.transfer-show__amount-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--font-1);
+}
+
+.transfer-show__state {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.transfer-show__state--pending {
+  background-color: oklch(from var(--warning) / 0.1);
+  color: var(--warning);
+}
+
+.transfer-show__state--posted {
+  background-color: oklch(from var(--success) / 0.1);
+  color: var(--success);
+}
+
+.transfer-show__details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.transfer-show__detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.transfer-show__detail:last-child {
+  border-bottom: none;
+}
+
+.transfer-show__label {
+  font-size: 0.875rem;
+  color: var(--font-2);
+  font-weight: 500;
+}
+
+.transfer-show__value {
+  font-size: 0.875rem;
+  color: var(--font-1);
+  font-weight: 500;
+}
+
+.transfer-show__account-link,
+.transfer-show__schedule-link {
+  color: var(--link);
+  text-decoration: none;
+  transition: color var(--speed-fast) ease;
+}
+
+.transfer-show__account-link:hover,
+.transfer-show__schedule-link:hover {
+  color: oklch(from var(--link) l c h / 0.8);
+  text-decoration: underline;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .transfers-index__card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .transfer-show__amount {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .transfer-show__detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .transfer-show__amount-value {
+    font-size: 1.5rem;
+  }
+}

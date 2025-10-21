@@ -30,7 +30,7 @@
 
         <div class="form__group">
           <%= form.label :kind, class: "form__label" %>
-          <%= form.select :kind, options_for_select(Account.kinds.keys.map { |k| [k.humanize, k] }, @account.kind), {}, 
+          <%= form.select :kind, options_for_select(Account.kinds.map { |full, short| [short.humanize, full] }, @account.kind), {}, 
               class: "form__select", 
               data: { action: "change->account-form#kindChanged", "account-form-target": "kindSelect" } %>
         </div>

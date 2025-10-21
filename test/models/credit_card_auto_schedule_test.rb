@@ -8,7 +8,7 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
       user: @user,
       organization: @organization,
       name: "Checking",
-      kind: "cash",
+      kind: "Account::Cash",
       debits: 1000,
       credits: 0
     )
@@ -19,7 +19,7 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
       user: @user,
       organization: @organization,
       name: "Visa",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       debits: 0,
       credits: 500,
       metadata: { due_day: 15, statement_day: 1, credit_limit: 4000 }
@@ -41,7 +41,7 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
       user: @user,
       organization: @organization,
       name: "Vendor",
-      kind: "vendor",
+      kind: "Account::Vendor",
       debits: 0,
       credits: 100
     )
@@ -55,7 +55,7 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
         user: @user,
         organization: @organization,
         name: "Visa",
-        kind: "credit_card",
+        kind: "Account::CreditCard",
         debits: 0,
         credits: 500,
         statement_day: 1
@@ -69,7 +69,7 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
         user: @user,
         organization: @organization,
         name: "Visa",
-        kind: "credit_card",
+        kind: "Account::CreditCard",
         debits: 0,
         credits: 500,
         due_day: 15
@@ -85,7 +85,7 @@ class CreditCardAutoScheduleTest < ActiveSupport::TestCase
       user: @user,
       organization: @organization,
       name: "Mastercard",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       debits: 0,
       credits: 500,
       metadata: { due_day: 15, statement_day: 1, credit_limit: 3500 }

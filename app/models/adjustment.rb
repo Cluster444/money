@@ -1,4 +1,6 @@
 class Adjustment < ApplicationRecord
+  include Monetize
+
   belongs_to :account
 
   validates :account, presence: true
@@ -6,6 +8,8 @@ class Adjustment < ApplicationRecord
   validate :at_least_one_amount_present
 
   attribute :target_balance, :decimal
+
+  monetize :credit_amount, :debit_amount
 
   after_create :update_account_balance
   after_update :handle_balance_update
@@ -35,45 +39,51 @@ class Adjustment < ApplicationRecord
 
   def update_account_balance
     if credit_amount.present?
-      account.increment!(:credits, credit_amount)
+      current_credits_cents = account.credits_before_type_cast || 0
+      new_credits_cents = current_credits_cents + credit_amount_before_type_cast
+      account.update_column(:credits, new_credits_cents)
     elsif debit_amount.present?
-      account.increment!(:debits, debit_amount)
+      current_debits_cents = account.debits_before_type_cast || 0
+      new_debits_cents = current_debits_cents + debit_amount_before_type_cast
+      account.update_column(:debits, new_debits_cents)
     end
   end
 
   def handle_balance_update
     # Handle credit amount changes
     if saved_change_to_credit_amount?
-      old_credit = credit_amount_before_last_save
-      new_credit = credit_amount
+      old_credit_cents = credit_amount_before_last_save || 0
+      new_credit_cents = credit_amount_before_type_cast || 0
 
-      if old_credit.present?
-        account.decrement!(:credits, old_credit)
-      end
-      if new_credit.present?
-        account.increment!(:credits, new_credit)
-      end
+      current_credits_cents = account.credits_before_type_cast || 0
+
+      # Remove old amount and add new amount
+      current_credits_cents = current_credits_cents - old_credit_cents + new_credit_cents
+      account.update_column(:credits, current_credits_cents)
     end
 
     # Handle debit amount changes
     if saved_change_to_debit_amount?
-      old_debit = debit_amount_before_last_save
-      new_debit = debit_amount
+      old_debit_cents = debit_amount_before_last_save || 0
+      new_debit_cents = debit_amount_before_type_cast || 0
 
-      if old_debit.present?
-        account.decrement!(:debits, old_debit)
-      end
-      if new_debit.present?
-        account.increment!(:debits, new_debit)
-      end
+      current_debits_cents = account.debits_before_type_cast || 0
+
+      # Remove old amount and add new amount
+      current_debits_cents = current_debits_cents - old_debit_cents + new_debit_cents
+      account.update_column(:debits, current_debits_cents)
     end
   end
 
   def reverse_account_balance
     if credit_amount.present?
-      account.decrement!(:credits, credit_amount)
+      current_credits_cents = account.credits_before_type_cast || 0
+      new_credits_cents = current_credits_cents - credit_amount_before_type_cast
+      account.update_column(:credits, new_credits_cents)
     elsif debit_amount.present?
-      account.decrement!(:debits, debit_amount)
+      current_debits_cents = account.debits_before_type_cast || 0
+      new_debits_cents = current_debits_cents - debit_amount_before_type_cast
+      account.update_column(:debits, new_debits_cents)
     end
   end
 end

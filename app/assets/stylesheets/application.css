@@ -38,6 +38,16 @@
   align-items: center;
 }
 
+.app-header__switchers {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spacing-md {
+  width: 1rem;
+}
+
 .app-header__brand {
   font-size: 1.5rem;
   font-weight: bold;

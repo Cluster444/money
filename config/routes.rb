@@ -6,7 +6,11 @@ Rails.application.routes.draw do
     resources :accounts, only: [ :index, :new, :create, :show, :edit, :update ] do
       resources :adjustments, only: [ :index, :new, :create, :edit, :update, :destroy ]
     end
-    resources :transfers, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
+    resources :transfers, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
+      member do
+        patch :post
+      end
+    end
     resources :schedules, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

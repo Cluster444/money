@@ -108,7 +108,7 @@ class ScheduleTest < ActiveSupport::TestCase
   # Fixture tests
   test "monthly schedule should have correct attributes" do
     assert_equal "Monthly Revenue Transfer", @schedule.name
-    assert_equal 1234, @schedule.amount
+    assert_equal 12.34, @schedule.amount
     assert_equal "month", @schedule.period
     assert_equal 1, @schedule.frequency
     assert_equal 2.weeks.ago.to_date, @schedule.starts_on
@@ -349,7 +349,7 @@ test "monthly schedule should handle frequency correctly" do
 
     # Verify transfer attributes
     transfer = schedule.transfers.find_by(pending_on: Date.current)
-    assert_equal 250, transfer.amount
+    assert_equal 2.50, transfer.amount
     assert_equal "pending", transfer.state
     assert_equal schedule.debit_account, transfer.debit_account
     assert_equal schedule.credit_account, transfer.credit_account
@@ -433,7 +433,7 @@ test "create_pending_transfers handles edge cases gracefully" do
     transfers = schedule.planned_transfers(dates)
 
     assert_equal 1, transfers.length
-    assert_equal 800, transfers.first.amount
+    assert_equal 8.00, transfers.first.amount
     assert_equal Date.current, transfers.first.pending_on
   end
 
@@ -470,7 +470,7 @@ test "create_pending_transfers handles edge cases gracefully" do
     transfers = schedule.planned_transfers(dates)
 
     assert_equal 3, transfers.length
-    assert_equal 800, transfers.first.amount  # Uses balance for first transfer
+    assert_equal 8.00, transfers.first.amount  # Uses balance for first transfer
     assert_equal 500, transfers.second.amount  # Uses fixed amount for subsequent
     assert_equal 500, transfers.third.amount
   end
@@ -527,7 +527,7 @@ test "create_pending_transfers handles edge cases gracefully" do
 
     # Should use the posted_balance (debits - credits = 1000 - 200 = 800)
     assert_equal 1, transfers.length
-    assert_equal 800, transfers.first.amount
+    assert_equal 8.00, transfers.first.amount
   end
 
   # Relative account date generation tests
@@ -751,7 +751,7 @@ test "create_pending_transfers handles edge cases gracefully" do
     # planned_transfers should create one transfer with the balance amount
     transfers = schedule.planned_transfers(dates)
     assert_equal 1, transfers.length
-    assert_equal 800, transfers.first.amount
+    assert_equal 8.00, transfers.first.amount
     assert_equal dates.first, transfers.first.pending_on
   end
 
@@ -774,7 +774,7 @@ test "create_pending_transfers handles edge cases gracefully" do
     # planned_transfers should use balance for first, fixed amount for rest
     transfers = schedule.planned_transfers(dates)
     assert_equal dates.length, transfers.length
-    assert_equal 800, transfers.first.amount  # Uses balance
+    assert_equal 8.00, transfers.first.amount  # Uses balance
     transfers[1..-1].each do |transfer|
       assert_equal 500, transfer.amount  # Uses fixed amount
     end
@@ -800,7 +800,7 @@ test "create_pending_transfers handles edge cases gracefully" do
     # planned_transfers should create one transfer with balance amount
     transfers = schedule.planned_transfers(dates)
     assert_equal 1, transfers.length
-    assert_equal 800, transfers.first.amount
+    assert_equal 8.00, transfers.first.amount
     assert_equal future_date, transfers.first.pending_on
   end
 
@@ -827,7 +827,7 @@ test "create_pending_transfers handles edge cases gracefully" do
     # Check the transfer details
     transfer = Transfer.order(:created_at).last
     assert_equal schedule, transfer.schedule
-    assert_equal 800, transfer.amount  # Balance amount
+    assert_equal 8.00, transfer.amount  # Balance amount
     assert_equal Date.current, transfer.pending_on
     assert_equal "pending", transfer.state
   end

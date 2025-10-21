@@ -16,7 +16,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with cash accounts only" do
-    @user.organizations.joins(:accounts).where.not(accounts: { kind: "cash" }).each { |org| org.accounts.where.not(kind: "cash").destroy_all }
+    @user.organizations.joins(:accounts).where.not(accounts: { kind: "Account::Cash" }).each { |org| org.accounts.where.not(kind: "Account::Cash").destroy_all }
 
     get organization_accounts_url(@user.organizations.first)
     assert_response :success
@@ -28,7 +28,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with credit card accounts only" do
-    @user.accounts.where.not(kind: "credit_card").destroy_all
+    @user.accounts.where.not(kind: "Account::CreditCard").destroy_all
 
     get organization_accounts_url(@user.organizations.first)
     assert_response :success
@@ -40,7 +40,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with vendor accounts only" do
-    @user.accounts.where.not(kind: "vendor").destroy_all
+    @user.accounts.where.not(kind: "Account::Vendor").destroy_all
 
     get organization_accounts_url(@user.organizations.first)
     assert_response :success
@@ -58,6 +58,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".page__section-header", "Cash"
     assert_select ".page__section-header", "Credit Cards"
     assert_select ".page__section-header", "Vendors"
+    assert_select ".page__section-header", "Customers"
     assert_select ".page__empty", count: 0
   end
 
@@ -70,6 +71,59 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+test "should render all expected accounts with dom_ids" do
+    get organization_accounts_url(@user.organizations.first)
+    assert_response :success
+
+    # Get all accounts for the user's organization
+    expected_accounts = @user.organizations.first.accounts.order(:name)
+
+    # Verify each account is rendered with its DOM ID
+    expected_accounts.each do |account|
+      assert_select "div##{dom_id(account)}", count: 1
+    end
+
+    # Verify the total number of account cards matches
+    assert_select "div.accounts-index__card", expected_accounts.count
+  end
+
+test "should render all expected accounts by type with dom_ids" do
+    get organization_accounts_url(@user.organizations.first)
+    assert_response :success
+
+    organization = @user.organizations.first
+
+    # Test cash accounts
+    cash_accounts = organization.accounts.cash.order(:name)
+    cash_accounts.each do |account|
+      assert_select "div##{dom_id(account)}", count: 1
+    end
+
+    # Test credit card accounts
+    credit_card_accounts = organization.accounts.credit_card.order(:name)
+    credit_card_accounts.each do |account|
+      assert_select "div##{dom_id(account)}", count: 1
+    end
+
+    # Test vendor accounts
+    vendor_accounts = organization.accounts.vendor.order(:name)
+    vendor_accounts.each do |account|
+      assert_select "div##{dom_id(account)}", count: 1
+    end
+
+    # Test customer accounts
+    customer_accounts = organization.accounts.customer.order(:name)
+    customer_accounts.each do |account|
+      assert_select "div##{dom_id(account)}", count: 1
+    end
+
+    # Verify total count
+    total_expected = cash_accounts.count + credit_card_accounts.count + vendor_accounts.count + customer_accounts.count
+    assert_select "div.accounts-index__card", total_expected
+  end
+
+
+
   test "should order accounts alphabetically within each section" do
     get organization_accounts_url(@user.organizations.first)
 
@@ -80,9 +134,10 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     cash_names = @user.accounts.cash.order(:name).pluck(:name)
     credit_card_names = @user.accounts.credit_card.order(:name).pluck(:name)
     vendor_names = @user.accounts.vendor.order(:name).pluck(:name)
+    customer_names = @user.accounts.customer.order(:name).pluck(:name)
 
-    # Check that the order matches (sections appear in order: cash, credit cards, vendors)
-    expected_order = cash_names + credit_card_names + vendor_names
+    # Check that the order matches (sections appear in order: cash, credit cards, vendors, customers)
+    expected_order = cash_names + credit_card_names + vendor_names + customer_names
     assert_equal expected_order, account_names
   end
 
@@ -103,7 +158,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create account" do
     assert_difference("Account.count", 1) do
-      post organization_accounts_url(@user.organizations.first), params: { account: { name: "Test Account", kind: "cash" } }
+      post organization_accounts_url(@user.organizations.first), params: { account: { name: "Test Account", kind: "Account::Cash" } }
     end
 
     assert_redirected_to organization_accounts_url(@user.organizations.first)
@@ -111,13 +166,13 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     created_account = Account.last
     assert_equal "Test Account", created_account.name
-    assert_equal "cash", created_account.kind
+    assert_equal "Account::Cash", created_account.kind
     assert_equal @user, created_account.user
   end
 
   test "should not create account with invalid data" do
     assert_no_difference("Account.count") do
-      post organization_accounts_url(@user.organizations.first), params: { account: { name: "", kind: "cash" } }
+      post organization_accounts_url(@user.organizations.first), params: { account: { name: "", kind: "Account::Cash" } }
     end
 
     assert_response :unprocessable_entity
@@ -144,7 +199,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     organization = other_user.organizations.create!(name: "Other Organization")
     other_account = organization.accounts.create!(
       name: "Other User Account",
-      kind: "cash"
+      kind: "Account::Cash"
     )
 
     get organization_account_url(other_account.organization, other_account)
@@ -156,7 +211,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     other_user.destroy
   end
 
-  test "should get edit" do
+test "should get edit" do
     account = @user.accounts.cash.first
 
     get edit_organization_account_url(account.organization, account)
@@ -250,7 +305,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       post organization_accounts_url(@user.organizations.first), params: {
         account: {
           name: "Test Credit Card",
-          kind: "credit_card",
+          kind: "Account::CreditCard",
           due_day: 15,
           statement_day: 1,
           credit_limit: 3000
@@ -262,14 +317,14 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     created_account = Account.last
     assert_equal "Test Credit Card", created_account.name
-    assert_equal "credit_card", created_account.kind
+    assert_equal "Account::CreditCard", created_account.kind
   end
 
   test "should create credit card account with metadata and payment schedule" do
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account",
-      kind: "cash",
+      kind: "Account::Cash",
       user: @user
     )
 
@@ -278,7 +333,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
         post organization_accounts_url(@user.organizations.first), params: {
           account: {
             name: "Test Credit Card with Schedule",
-            kind: "credit_card",
+            kind: "Account::CreditCard",
             due_day: "15",
             statement_day: "1",
             credit_limit: "4000"
@@ -291,7 +346,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     created_account = Account.last
     assert_equal "Test Credit Card with Schedule", created_account.name
-    assert_equal "credit_card", created_account.kind
+    assert_equal "Account::CreditCard", created_account.kind
     assert_equal 15, created_account.due_day
     assert_equal 1, created_account.statement_day
 
@@ -309,7 +364,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
         post organization_accounts_url(@user.organizations.first), params: {
           account: {
             name: "Test Credit Card With Schedule",
-            kind: "credit_card",
+            kind: "Account::CreditCard",
             due_day: 15,
             statement_day: 1,
             credit_limit: 5000
@@ -322,7 +377,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     created_account = Account.last
     assert_equal "Test Credit Card With Schedule", created_account.name
-    assert_equal "credit_card", created_account.kind
+    assert_equal "Account::CreditCard", created_account.kind
     assert_equal 15, created_account.due_day
     assert_equal 1, created_account.statement_day
 
@@ -341,7 +396,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Check that metadata is displayed
     assert_select ".accounts-show__metadata" do
       assert_select ".accounts-show__metadata-key", "Credit Limit:"
-      assert_select ".accounts-show__metadata-value", "$50.00"
+      assert_select ".accounts-show__metadata-value", "$5,000"
     end
 
     # Check that debit schedules section is present (credit card payment schedule)
@@ -359,7 +414,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account for Schedule",
-      kind: "cash",
+      kind: "Account::Cash",
       user: @user,
       organization: organization
     )
@@ -368,7 +423,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       # Create credit card directly with metadata (controller doesn't support metadata yet)
       credit_card = Account.create!(
         name: "Test Credit Card with Schedule",
-        kind: "credit_card",
+        kind: "Account::CreditCard",
         user: @user,
         organization: organization,
         metadata: { "due_day": 15, "statement_day": 1, "credit_limit": 6000 }
@@ -387,7 +442,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account",
-      kind: "cash",
+      kind: "Account::Cash",
       user: @user,
       organization: organization
     )
@@ -395,7 +450,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Create a credit card account with metadata that should trigger schedule creation
     credit_card = Account.create!(
       name: "Test Credit Card",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       user: @user,
       organization: organization,
       metadata: { "due_day": 15, "statement_day": 1, "credit_limit": 7000 }
@@ -422,7 +477,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Create a cash account first (required for schedule creation)
     cash_account = Account.create!(
       name: "Test Cash Account",
-      kind: "cash",
+      kind: "Account::Cash",
       user: @user,
       organization: organization
     )
@@ -430,7 +485,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     # Create a credit card with statement day 15 and due day 25
     credit_card = Account.create!(
       name: "Test Credit Card",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       user: @user,
       organization: organization,
       metadata: { "due_day": 25, "statement_day": 15, "credit_limit": 8000 }
@@ -453,7 +508,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       post organization_accounts_url(@user.organizations.first), params: {
         account: {
           name: "Invalid Credit Card",
-          kind: "credit_card",
+          kind: "Account::CreditCard",
           due_day: 32,
           statement_day: 1
         }
@@ -468,7 +523,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       post organization_accounts_url(@user.organizations.first), params: {
         account: {
           name: "Incomplete Credit Card",
-          kind: "credit_card",
+          kind: "Account::CreditCard",
           due_day: 15
         }
       }

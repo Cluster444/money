@@ -1,0 +1,41 @@
+<% if defined?(current_organization) && current_organization %>
+  <div data-controller="view-switcher" class="view-switcher mb-4">
+    <button 
+      data-view-switcher-target="button"
+      data-action="click->view-switcher#toggle"
+      class="view-switcher__button"
+      type="button"
+      aria-haspopup="listbox"
+      aria-expanded="false"
+    >
+      <span class="view-switcher__current-name"><%= current_view_item[:name] %></span>
+      <span class="view-switcher__chevron" data-view-switcher-target="chevron">▼</span>
+    </button>
+    
+    <div 
+      data-view-switcher-target="dropdown"
+      class="view-switcher__dropdown"
+      role="listbox"
+      aria-label="Views"
+    >
+      <% if other_view_items.any? %>
+        <% other_view_items.each do |item| %>
+          <a 
+            href="<%= item[:path].call %>"
+            class="view-switcher__option"
+            role="option"
+            data-view-switcher-target="option"
+            data-action="click->view-switcher#select"
+            data-view-key="<%= item[:key] %>"
+          >
+            <%= item[:name] %>
+          </a>
+        <% end %>
+      <% else %>
+        <div class="view-switcher__empty">
+          No other views
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

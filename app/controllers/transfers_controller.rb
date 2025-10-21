@@ -1,34 +1,59 @@
 class TransfersController < ApplicationController
   include OrganizationScoped
 
+  before_action do
+    @transfers = current_organization.transfers.includes(:debit_account, :credit_account, :schedule)
+    @accounts = current_organization.accounts
+  end
+
   def index
-    @transfers = current_organization.transfers.includes(:debit_account, :credit_account).order(created_at: :desc)
+    @pending_transfers = @transfers.pending.order(pending_on: :desc)
+    @posted_transfers = @transfers.posted.order(posted_on: :desc)
   end
 
-  def new
-    @transfer = current_organization.transfers.build
+def new
+    @transfer = @transfers.new
+    @transfer.pending_on = Date.current
+    @accounts = current_organization.accounts
+
+    # Preselect accounts from query params
+    @transfer.debit_account_id = params[:debit_account_id] if params[:debit_account_id].present?
+    @transfer.credit_account_id = params[:credit_account_id] if params[:credit_account_id].present?
   end
 
-  def create
-    @transfer = current_organization.transfers.build(transfer_params)
+def create
+    @transfer = @transfers.new(transfer_params)
+    @accounts = current_organization.accounts
+
+    # Set dates based on status selection
+    if params[:transfer][:status] == "posted"
+      @transfer.pending_on = Date.current
+      @transfer.posted_on = Date.current
+      @transfer.state = "posted"
+    else
+      @transfer.pending_on = Date.current
+      @transfer.state = "pending"
+    end
 
     if @transfer.save
-      redirect_to organization_transfers_path(current_organization), notice: "Transfer was successfully created."
+      redirect_to organization_transfer_path(current_organization, @transfer), notice: "Transfer was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    @transfer = current_organization.transfers.find(params[:id])
+    @transfer = @transfers.find(params[:id])
   end
 
   def edit
-    @transfer = current_organization.transfers.find(params[:id])
+    @transfer = @transfers.find(params[:id])
+    @accounts = current_organization.accounts
   end
 
   def update
-    @transfer = current_organization.transfers.find(params[:id])
+    @transfer = @transfers.find(params[:id])
+    @accounts = current_organization.accounts
 
     if @transfer.update(transfer_params)
       redirect_to organization_transfer_path(current_organization, @transfer), notice: "Transfer was successfully updated."
@@ -38,14 +63,24 @@ class TransfersController < ApplicationController
   end
 
   def destroy
-    @transfer = current_organization.transfers.find(params[:id])
+    @transfer = @transfers.find(params[:id])
     @transfer.destroy
     redirect_to organization_transfers_path(current_organization), notice: "Transfer was successfully deleted."
+  end
+
+  def post
+    @transfer = @transfers.find(params[:id])
+
+    if @transfer.post!
+      redirect_to organization_transfer_path(current_organization, @transfer), notice: "Transfer was successfully posted."
+    else
+      redirect_to organization_transfer_path(current_organization, @transfer), alert: "Could not post transfer."
+    end
   end
 
   private
 
   def transfer_params
-    params.expect(transfer: [ :debit_account_id, :credit_account_id, :amount, :date, :note ])
+    params.expect(transfer: [ :amount, :debit_account_id, :credit_account_id ])
   end
 end

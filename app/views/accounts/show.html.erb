@@ -2,7 +2,11 @@
   <div class="page__header">
     <div class="accounts-show__title">
       <h1><%= @account.name %></h1>
-      <span class="accounts-show__kind accounts-show__kind--<%= @account.kind %>"><%= @account.kind.humanize %></span>
+      <span
+        class="
+          accounts-show__kind accounts-show__kind--<%= @account.kind_short %>
+        "
+      ><%= @account.kind_short.humanize %></span>
     </div>
     <div class="accounts-show__actions">
       <%= back_button organization_accounts_path(current_organization), "Back to Accounts" %>
@@ -27,44 +31,38 @@
         <div class="accounts-show__balance">
           <div class="accounts-show__balance-label"><%= @account.credit_card? ? "Amount Owed" : "Posted Balance" %></div>
           <div class="accounts-show__balance-value">
-            <%= link_to number_to_currency(@account.posted_balance_for_display / 100.0), 
-                        organization_account_adjustments_path(current_organization, @account), 
-                        class: "accounts-show__balance-link",
-                        title: "View adjustments for this account" %>
+            <%= link_to number_to_currency(@account.posted_balance_for_display),
+            organization_account_adjustments_path(current_organization, @account),
+            class: "accounts-show__balance-link",
+            title: "View adjustments for this account" %>
           </div>
         </div>
         <div class="accounts-show__balance">
           <div class="accounts-show__balance-label">Pending</div>
-          <div class="accounts-show__balance-value"><%= number_to_currency(@account.pending_balance_for_display / 100.0) %></div>
+          <div class="accounts-show__balance-value"><%= number_to_currency(@account.pending_balance_for_display) %></div>
         </div>
         <div class="accounts-show__balance">
           <div class="accounts-show__balance-label">Planned (30d)</div>
-          <div class="accounts-show__balance-value"><%= number_to_currency(@account.planned_balance_for_display(Date.current + 30.days) / 100.0) %></div>
+          <div class="accounts-show__balance-value"><%= number_to_currency(@account.planned_balance_for_display(Date.current + 30.days)) %></div>
         </div>
       </div>
 
-      <% if @account.credit_card? && (@account.next_statement_date || @account.next_due_date || @account.credit_limit) %>
+      <% if @account.credit_card? %>
         <div class="accounts-show__metadata">
           <h3>Credit Card Information</h3>
           <div class="accounts-show__metadata-grid">
-            <% if @account.credit_limit %>
-              <div class="accounts-show__metadata-item">
-                <span class="accounts-show__metadata-key">Credit Limit:</span>
-                <span class="accounts-show__metadata-value"><%= number_to_currency(@account.credit_limit / 100.0) %></span>
-              </div>
-            <% end %>
-            <% if @account.next_statement_date %>
-              <div class="accounts-show__metadata-item">
-                <span class="accounts-show__metadata-key">Next Statement:</span>
-                <span class="accounts-show__metadata-value"><%= @account.next_statement_date.strftime("%B %d, %Y") %></span>
-              </div>
-            <% end %>
-            <% if @account.next_due_date %>
-              <div class="accounts-show__metadata-item">
-                <span class="accounts-show__metadata-key">Next Due Date:</span>
-                <span class="accounts-show__metadata-value"><%= @account.next_due_date.strftime("%B %d, %Y") %></span>
-              </div>
-            <% end %>
+            <div class="accounts-show__metadata-item">
+              <span class="accounts-show__metadata-key">Credit Limit:</span>
+              <span class="accounts-show__metadata-value"><%= number_to_currency(@account.credit_limit, precision: 0) %></span>
+            </div>
+            <div class="accounts-show__metadata-item">
+              <span class="accounts-show__metadata-key">Next Statement:</span>
+              <span class="accounts-show__metadata-value"><%= @account.next_statement_date.strftime("%B %d, %Y") %></span>
+            </div>
+            <div class="accounts-show__metadata-item">
+              <span class="accounts-show__metadata-key">Next Due Date:</span>
+              <span class="accounts-show__metadata-value"><%= @account.next_due_date.strftime("%B %d, %Y") %></span>
+            </div>
           </div>
         </div>
       <% end %>
@@ -95,9 +93,10 @@
                 <% if schedule.amount.present? && schedule.period.present? %>
                   <span class="accounts-show__schedule-amount-frequency">
                     <% if schedule.frequency > 1 %>
-                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.frequency %> <%= schedule.period.humanize.pluralize(schedule.frequency) %>
+                      <%= number_to_currency(schedule.amount) %>/<%= schedule.frequency %>
+                      <%= schedule.period.humanize.pluralize(schedule.frequency) %>
                     <% else %>
-                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.period.humanize %>
+                      <%= number_to_currency(schedule.amount) %>/<%= schedule.period.humanize %>
                     <% end %>
                   </span>
                 <% end %>
@@ -149,9 +148,10 @@
                 <% if schedule.amount.present? && schedule.period.present? %>
                   <span class="accounts-show__schedule-amount-frequency">
                     <% if schedule.frequency > 1 %>
-                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.frequency %> <%= schedule.period.humanize.pluralize(schedule.frequency) %>
+                      <%= number_to_currency(schedule.amount) %>/<%= schedule.frequency %>
+                      <%= schedule.period.humanize.pluralize(schedule.frequency) %>
                     <% else %>
-                      <%= number_to_currency(schedule.amount / 100.0) %>/<%= schedule.period.humanize %>
+                      <%= number_to_currency(schedule.amount) %>/<%= schedule.period.humanize %>
                     <% end %>
                   </span>
                 <% end %>
@@ -193,4 +193,3 @@
     <% end %>
   </div>
 </div>
-

@@ -94,9 +94,11 @@ class TransferTest < ActiveSupport::TestCase
     revenue_account = accounts(:revenue_account)
     cash_account = accounts(:lazaro_cash)
 
+    transfer_amount = @posted_transfer.amount
+
     # Set initial balances - cash account must maintain positive balance
-    revenue_account.update!(debits: @posted_transfer.amount)
-    cash_account.update!(debits: @posted_transfer.amount + 1000, credits: @posted_transfer.amount)
+    revenue_account.update!(debits: transfer_amount)
+    cash_account.update!(debits: transfer_amount + 10.00, credits: transfer_amount)
 
     initial_debits = revenue_account.debits
     initial_credits = cash_account.credits
@@ -106,8 +108,8 @@ class TransferTest < ActiveSupport::TestCase
     revenue_account.reload
     cash_account.reload
 
-    assert_equal initial_debits - @posted_transfer.amount, revenue_account.debits
-    assert_equal initial_credits - @posted_transfer.amount, cash_account.credits
+    assert_equal initial_debits - transfer_amount, revenue_account.debits
+    assert_equal initial_credits - transfer_amount, cash_account.credits
   end
 
   test "should simply delete pending transfer without reversing balances" do
@@ -146,7 +148,7 @@ class TransferTest < ActiveSupport::TestCase
   # Fixture tests
   test "posted transfer should have correct attributes" do
     assert_equal "posted", @posted_transfer.state
-    assert_equal 1234, @posted_transfer.amount
+    assert_equal 12.34, @posted_transfer.amount
     assert_equal 2.weeks.ago.to_date, @posted_transfer.pending_on
     assert_equal 2.weeks.ago.to_date, @posted_transfer.posted_on
     assert_equal accounts(:revenue_account), @posted_transfer.debit_account
@@ -156,7 +158,7 @@ class TransferTest < ActiveSupport::TestCase
 
   test "pending transfer should have correct attributes" do
     assert_equal "pending", @pending_transfer.state
-    assert_equal 2222, @pending_transfer.amount
+    assert_equal 22.22, @pending_transfer.amount
     assert_equal 1.day.ago.to_date, @pending_transfer.pending_on
     assert_nil @pending_transfer.posted_on
     assert_equal accounts(:lazaro_cash), @pending_transfer.debit_account
@@ -193,17 +195,18 @@ class TransferTest < ActiveSupport::TestCase
 
   test "should allow updating pending transfer" do
     original_amount = @pending_transfer.amount
-    @pending_transfer.amount = 3333
+    @pending_transfer.amount = 33.33
 
     assert @pending_transfer.save
     @pending_transfer.reload
-    assert_equal 3333, @pending_transfer.amount
+    assert_equal 33.33, @pending_transfer.amount
   end
 
   test "should allow destroying posted transfer with balance reversal" do
     # Posted transfers can be destroyed but balances are reversed
     initial_debits = @posted_transfer.debit_account.debits
     initial_credits = @posted_transfer.credit_account.credits
+    transfer_amount = @posted_transfer.amount
 
     assert @posted_transfer.destroy
     assert_not Transfer.exists?(@posted_transfer.id)
@@ -211,8 +214,9 @@ class TransferTest < ActiveSupport::TestCase
     @posted_transfer.debit_account.reload
     @posted_transfer.credit_account.reload
 
-    assert_equal initial_debits - @posted_transfer.amount, @posted_transfer.debit_account.debits
-    assert_equal initial_credits - @posted_transfer.amount, @posted_transfer.credit_account.credits
+    # Since we're working with dollars now, the calculation should work correctly
+    assert_equal initial_debits - transfer_amount, @posted_transfer.debit_account.debits
+    assert_equal initial_credits - transfer_amount, @posted_transfer.credit_account.credits
   end
 
   test "should allow destroying pending transfer" do
@@ -236,6 +240,7 @@ class TransferTest < ActiveSupport::TestCase
   test "post! should update account balances correctly" do
     debit_account = @pending_transfer.debit_account
     credit_account = @pending_transfer.credit_account
+    transfer_amount = @pending_transfer.amount
 
     initial_debit_debits = debit_account.debits
     initial_credit_credits = credit_account.credits
@@ -245,8 +250,8 @@ class TransferTest < ActiveSupport::TestCase
     debit_account.reload
     credit_account.reload
 
-    assert_equal initial_debit_debits + @pending_transfer.amount, debit_account.debits
-    assert_equal initial_credit_credits + @pending_transfer.amount, credit_account.credits
+    assert_equal initial_debit_debits + transfer_amount, debit_account.debits
+    assert_equal initial_credit_credits + transfer_amount, credit_account.credits
   end
 
   test "post! should return false for already posted transfer" do
@@ -267,8 +272,8 @@ test "post! should be transactional" do
     initial_debit_debits = debit_account.debits
     initial_credit_credits = credit_account.credits
 
-    # Mock the credit_account increment! to raise an exception
-    credit_account.define_singleton_method(:increment!) do |field, value|
+    # Mock the credit_account update_column to raise an exception
+    credit_account.define_singleton_method(:update_column) do |field, value|
       raise StandardError, "Simulated database error"
     end
 
@@ -378,7 +383,7 @@ test "post! should be transactional" do
     organization = user.organizations.create!(name: "Test Organization")
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
@@ -403,7 +408,7 @@ test "post! should be transactional" do
     organization = user.organizations.create!(name: "Test Organization")
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
@@ -427,7 +432,7 @@ test "post! should be transactional" do
     organization = user.organizations.create!(name: "Test Organization")
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)
@@ -458,7 +463,7 @@ test "post! should be transactional" do
     organization = user.organizations.create!(name: "Test Organization")
     credit_card = organization.accounts.create!(
       name: "Test Credit Card",
-      kind: "credit_card",
+      kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
     cash_account = accounts(:lazaro_cash)

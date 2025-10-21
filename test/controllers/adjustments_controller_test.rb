@@ -240,7 +240,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     organization = other_user.organizations.create!(name: "Other Organization")
     other_account = organization.accounts.create!(
       name: "Other User Account",
-      kind: "cash"
+      kind: "Account::Cash"
     )
 
     get new_organization_account_adjustment_url(other_account.organization, other_account)
@@ -270,7 +270,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     organization = other_user.organizations.create!(name: "Other Organization")
     other_account = organization.accounts.create!(
       name: "Other User Account",
-      kind: "cash"
+      kind: "Account::Cash"
     )
     other_adjustment = other_account.adjustments.create!(
       credit_amount: 10000,

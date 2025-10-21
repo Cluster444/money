@@ -28,6 +28,20 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.accounts-index__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-1);
+}
+
+.btn--small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  min-height: auto;
+}
+
 .accounts-index__card-header {
   display: flex;
   justify-content: space-between;

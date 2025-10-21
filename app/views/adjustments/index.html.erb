@@ -15,9 +15,9 @@
             <div class="adjustments-index__card-info">
               <h3 class="adjustments-index__card-amount">
                 <% if adjustment.debit_amount? %>
-                  <span class="adjustments-index__debit">+<%= number_to_currency(adjustment.debit_amount / 100.0) %></span>
+                  <span class="adjustments-index__debit">+<%= number_to_currency(adjustment.debit_amount) %></span>
                 <% elsif adjustment.credit_amount? %>
-                  <span class="adjustments-index__credit">-<%= number_to_currency(adjustment.credit_amount / 100.0) %></span>
+                  <span class="adjustments-index__credit">-<%= number_to_currency(adjustment.credit_amount) %></span>
                 <% end %>
               </h3>
               <span class="adjustments-index__card-date"><%= adjustment.created_at.strftime("%B %d, %Y") %></span>

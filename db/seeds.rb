@@ -26,31 +26,37 @@ ApplicationRecord.transaction do
 
   %w[Checking Savings].each do |cash_acct|
     personal.accounts.create!(
-      kind: "cash",
-      name: "Checking",
+      kind: "Account::Cash",
+      name: cash_acct,
       metadata: {}
     )
   end
-  checking = Account.first
+  checking = Account.find_by(name: "Checking")
 
   visa_cc = personal.accounts.create!(
-    kind: "credit_card",
+    kind: "Account::CreditCard",
     name: "Visa Card",
     metadata: {
       due_day: 10,
       statement_day: 15,
-      credit_limit: 10_000
+      credit_limit: 100
     }
   )
 
   [ "Rent", "Car", "Car Insurance", "Gas", "Electricity",
-    "Phone", "Internet", "Job" ].each do |vendor_acct|
+    "Phone", "Internet" ].each do |vendor_acct|
     personal.accounts.create!(
-      kind: "vendor",
+      kind: "Account::Vendor",
       name: vendor_acct,
       metadata: {}
     )
   end
+
+  personal.accounts.create!(
+    kind: "Account::Customer",
+    name: "Job",
+    metadata: {}
+  )
 
   Schedule.create!(
     name: "Pay Check",
@@ -58,7 +64,7 @@ ApplicationRecord.transaction do
     credit_account: Account.find_by(name: "Job"),
     starts_on: Date.current.beginning_of_month - 5.months,
     frequency: 1, period: "week",
-    amount: 100000,
+    amount: 2500.00,
   )
 
   Schedule.create!(
@@ -67,7 +73,7 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month - 5.months,
     frequency: 1, period: "month",
-    amount: 240000,
+    amount: 1200.00,
   )
 
   Schedule.create!(
@@ -76,7 +82,7 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month + 3.days - 5.months,
     frequency: 1, period: "month",
-    amount: 66500,
+    amount: 400.00,
   )
 
   Schedule.create!(
@@ -85,7 +91,7 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month + 6.days - 5.months,
     frequency: 1, period: "month",
-    amount: 14500,
+    amount: 150.00,
   )
 
   Schedule.create!(
@@ -94,7 +100,7 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month + 9.days - 5.months,
     frequency: 1, period: "month",
-    amount: 4500,
+    amount: 120.00,
   )
 
   Schedule.create!(
@@ -103,7 +109,7 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month + 12.days - 5.months,
     frequency: 1, period: "month",
-    amount: 15000,
+    amount: 200.00,
   )
 
   Schedule.create!(
@@ -112,7 +118,7 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month + 15.days - 5.months,
     frequency: 1, period: "month",
-    amount: 8000,
+    amount: 60.00,
   )
 
   Schedule.create!(
@@ -121,24 +127,32 @@ ApplicationRecord.transaction do
     credit_account: checking,
     starts_on: Date.current.beginning_of_month + 18.days - 5.months,
     frequency: 1, period: "month",
-    amount: 12000,
+    amount: 80.00,
   )
 
   # Backfill transfers for all schedules
   Schedule.all.each do |schedule|
     transfer_dates = schedule.transfer_dates(Date.current)
+
     transfer_dates.each do |date|
-      schedule.debit_account.increment!(:debits, schedule.amount)
-      schedule.credit_account.increment!(:credits, schedule.amount)
-      Transfer.find_or_create_by!(
-        schedule: schedule,
-        pending_on: date,
-        posted_on: date,
-        amount: schedule.amount,
-        debit_account: schedule.debit_account,
-        credit_account: schedule.credit_account,
-        state: "posted"
-      )
+      # Calculate the transfer amount (handles relative schedules)
+      calculated_amount = schedule.calculate_transfer_amount(transfer_dates.index(date))
+
+      # Only process if amount is greater than 0
+      if calculated_amount && calculated_amount > 0
+        # Create pending transfer first
+        transfer = Transfer.find_or_create_by!(
+          schedule: schedule,
+          pending_on: date,
+          amount: calculated_amount,
+          debit_account: schedule.debit_account,
+          credit_account: schedule.credit_account,
+          state: "pending"
+        )
+
+        # Post the transfer using the proper method to trigger all callbacks
+        transfer.post!
+      end
     end
     # Set last_materialized_on to the date of the last transfer created
     schedule.update!(last_materialized_on: transfer_dates.last) if transfer_dates.any?

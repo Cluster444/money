@@ -8,9 +8,8 @@ class AdjustmentTest < ActiveSupport::TestCase
       email_address: "test@example.com",
       password: "password123"
     )
-    @account = Account.create!(
+    @account = Account::Cash.create!(
       user: @user,
-      kind: "cash",
       name: "Test Account",
       debits: 1000,
       credits: 500
@@ -73,28 +72,28 @@ class AdjustmentTest < ActiveSupport::TestCase
     assert_includes adjustment.errors[:base], "Cannot have both credit amount and debit amount"
   end
 
-  test "should increment account credits when credit adjustment is created" do
+test "should increment account credits when credit adjustment is created" do
     initial_credits = @account.credits
     adjustment = Adjustment.create!(
       account: @account,
-      credit_amount: 100,
+      credit_amount: 1.00,
       note: "Test credit adjustment"
     )
 
     @account.reload
-    assert_equal initial_credits + 100, @account.credits
+    assert_equal initial_credits + 1.00, @account.credits
   end
 
   test "should increment account debits when debit adjustment is created" do
     initial_debits = @account.debits
     adjustment = Adjustment.create!(
       account: @account,
-      debit_amount: 50,
+      debit_amount: 0.50,
       note: "Test debit adjustment"
     )
 
     @account.reload
-    assert_equal initial_debits + 50, @account.debits
+    assert_equal initial_debits + 0.50, @account.debits
   end
 
   test "should belong to account" do

@@ -1,8 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# Lazaro Nixon's accounts
+# === Cash Account Fixtures ===
+# Lazaro Nixon's cash account
 lazaro_cash:
-  kind: cash
+  kind: Account::Cash
   name: "Lazaro's Cash Account"
   active: true
   debits: 0
@@ -10,8 +11,30 @@ lazaro_cash:
   metadata: {}
   organization: lazaro_personal
 
+# Cash account with balance for testing balance calculations
+cash_with_balance:
+  kind: Account::Cash
+  name: "Cash Account with Balance"
+  active: true
+  debits: 1000
+  credits: 200
+  metadata: {}
+  organization: lazaro_personal
+
+# Additional cash account for scope testing
+extra_cash:
+  kind: Account::Cash
+  name: "Extra Cash Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  organization: lazaro_personal
+
+# === Vendor Account Fixtures ===
+# Lazaro Nixon's vendor account
 lazaro_vendor:
-  kind: vendor
+  kind: Account::Vendor
   name: "Lazaro's Vendor Account"
   active: true
   debits: 0
@@ -19,9 +42,9 @@ lazaro_vendor:
   metadata: {}
   organization: lazaro_personal
 
-# Additional accounts for testing
+# Additional vendor accounts for testing
 revenue_account:
-  kind: vendor
+  kind: Account::Vendor
   name: "Revenue Account"
   active: true
   debits: 0
@@ -30,7 +53,7 @@ revenue_account:
   organization: lazaro_personal
 
 expense_account:
-  kind: vendor
+  kind: Account::Vendor
   name: "Expense Account"
   active: true
   debits: 0
@@ -38,18 +61,9 @@ expense_account:
   metadata: {}
   organization: lazaro_personal
 
-# Accounts with balances for testing balance calculations
-cash_with_balance:
-  kind: cash
-  name: "Cash Account with Balance"
-  active: true
-  debits: 1000
-  credits: 200
-  metadata: {}
-  organization: lazaro_personal
-
+# Vendor account with balance for testing balance calculations
 vendor_with_balance:
-  kind: vendor
+  kind: Account::Vendor
   name: "Vendor Account with Balance"
   active: true
   debits: 100
@@ -57,18 +71,9 @@ vendor_with_balance:
   metadata: {}
   organization: lazaro_personal
 
-# Additional accounts for scope testing
-extra_cash:
-  kind: cash
-  name: "Extra Cash Account"
-  active: true
-  debits: 0
-  credits: 0
-  metadata: {}
-  organization: lazaro_personal
-
+# Additional vendor account for scope testing
 extra_vendor:
-  kind: vendor
+  kind: Account::Vendor
   name: "Extra Vendor Account"
   active: true
   debits: 0
@@ -76,11 +81,34 @@ extra_vendor:
   metadata: {}
   organization: lazaro_personal
 
+# === Credit Card Account Fixtures ===
+# Lazaro Nixon's credit card
 lazaro_credit_card:
-  kind: credit_card
+  kind: Account::CreditCard
   name: "Lazaro's Credit Card"
   active: true
   debits: 0
   credits: 0
   metadata: { "due_day": 15, "statement_day": 1, "credit_limit": 5000 }
+  organization: lazaro_personal
+
+# === Customer Account Fixtures ===
+# Lazaro Nixon's customer account
+lazaro_customer:
+  kind: Account::Customer
+  name: "Lazaro's Customer Account"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  organization: lazaro_personal
+
+# Customer account with balance for testing balance calculations
+customer_with_balance:
+  kind: Account::Customer
+  name: "Customer Account with Balance"
+  active: true
+  debits: 200
+  credits: 1000
+  metadata: {}
   organization: lazaro_personal

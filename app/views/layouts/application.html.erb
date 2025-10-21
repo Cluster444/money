@@ -28,7 +28,11 @@
         <div class="app-header__left">
           <%= link_to "MONEY", root_path, class: "app-header__brand" %>
           <% if request.path.match?(/^\/organizations\/\d+\//) %>
-            <%= render "widgets/org_switcher" %>
+            <div class="app-header__switchers">
+              <%= render "widgets/org_switcher" %>
+              <div class="spacing-md"></div>
+              <%= render "widgets/view_switcher" %>
+            </div>
           <% end %>
         </div>
         <% if Current.user %>

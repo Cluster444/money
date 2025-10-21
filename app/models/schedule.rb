@@ -1,4 +1,6 @@
 class Schedule < ApplicationRecord
+  include Monetize
+
   validates :name, presence: true
   validates :amount, presence: true, unless: -> { relative_account_id.present? }
   validates :amount, numericality: { greater_than: 0, allow_blank: true }
@@ -8,6 +10,8 @@ class Schedule < ApplicationRecord
   validates :period, inclusion: { in: %w[day week month year], allow_blank: true }
   validate :frequency_requirements
   validate :different_accounts
+
+  monetize :amount
 
   belongs_to :relative_account, class_name: "Account", optional: true
   belongs_to :credit_account, class_name: "Account"

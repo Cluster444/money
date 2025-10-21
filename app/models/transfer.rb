@@ -1,4 +1,6 @@
 class Transfer < ApplicationRecord
+  include Monetize
+
   enum :state, { pending: "pending", posted: "posted" }
 
   validates :state, presence: true, inclusion: { in: states.values }
@@ -9,6 +11,8 @@ class Transfer < ApplicationRecord
   validates :posted_on, presence: { message: "must be set for posted transfers" }, if: :posted?
   validate :different_accounts
   validate :credit_card_balance_constraint
+
+  monetize :amount
 
   belongs_to :debit_account, class_name: "Account"
   belongs_to :credit_account, class_name: "Account"
@@ -25,8 +29,15 @@ class Transfer < ApplicationRecord
     return false unless pending?
 
     transaction do
-      debit_account.increment!(:debits, amount)
-      credit_account.increment!(:credits, amount)
+      # Use update_column to properly handle monetized attributes
+      current_debit_cents = debit_account.debits_before_type_cast || 0
+      new_debit_cents = current_debit_cents + amount_before_type_cast
+      debit_account.update_column(:debits, new_debit_cents)
+
+      current_credit_cents = credit_account.credits_before_type_cast || 0
+      new_credit_cents = current_credit_cents + amount_before_type_cast
+      credit_account.update_column(:credits, new_credit_cents)
+
       self.posted_on = Date.current
       self.state = :posted
       save!
@@ -75,7 +86,12 @@ class Transfer < ApplicationRecord
     def handle_deletion
       return unless posted?
       # Reverse the transfer amounts on accounts
-      debit_account.decrement!(:debits, amount)
-      credit_account.decrement!(:credits, amount)
+      current_debit_cents = debit_account.debits_before_type_cast || 0
+      new_debit_cents = current_debit_cents - amount_before_type_cast
+      debit_account.update_column(:debits, new_debit_cents)
+
+      current_credit_cents = credit_account.credits_before_type_cast || 0
+      new_credit_cents = current_credit_cents - amount_before_type_cast
+      credit_account.update_column(:credits, new_credit_cents)
     end
 end

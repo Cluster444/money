@@ -1,0 +1,76 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Transfers</h1>
+    <%= new_button new_organization_transfer_path(current_organization) %>
+  </div>
+
+  <div class="page__content">
+    <div class="page__list">
+      <% if @pending_transfers.any? %>
+        <h2 class="page__section-header">Pending Transfers</h2>
+        <% @pending_transfers.each do |transfer| %>
+          <%= link_to organization_transfer_path(current_organization, transfer), class: "transfers-index__link" do %>
+            <div class="transfers-index__card transfers-index__card--pending">
+              <div class="transfers-index__card-header">
+                <h3 class="transfers-index__card-amount"><%= number_to_currency(transfer.amount ) %></h3>
+                <span class="transfers-index__card-state transfers-index__card-state--pending">Pending</span>
+              </div>
+              <div class="transfers-index__card-body">
+                <div class="transfers-index__transfer-info">
+                  <div class="transfers-index__account">
+                    <span class="transfers-index__account-label">From:</span>
+                    <span class="transfers-index__account-name"><%= transfer.debit_account.name %></span>
+                  </div>
+                  <div class="transfers-index__account">
+                    <span class="transfers-index__account-label">To:</span>
+                    <span class="transfers-index__account-name"><%= transfer.credit_account.name %></span>
+                  </div>
+                  <div class="transfers-index__date">
+                    <span class="transfers-index__date-label">Pending on:</span>
+                    <span class="transfers-index__date-value"><%= transfer.pending_on %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <% if @posted_transfers.any? %>
+        <h2 class="page__section-header">Posted Transfers</h2>
+        <% @posted_transfers.each do |transfer| %>
+          <%= link_to organization_transfer_path(current_organization, transfer), class: "transfers-index__link" do %>
+            <div class="transfers-index__card transfers-index__card--posted">
+              <div class="transfers-index__card-header">
+                <h3 class="transfers-index__card-amount"><%= number_to_currency(transfer.amount ) %></h3>
+                <span class="transfers-index__card-state transfers-index__card-state--posted">Posted</span>
+              </div>
+              <div class="transfers-index__card-body">
+                <div class="transfers-index__transfer-info">
+                  <div class="transfers-index__account">
+                    <span class="transfers-index__account-label">From:</span>
+                    <span class="transfers-index__account-name"><%= transfer.debit_account.name %></span>
+                  </div>
+                  <div class="transfers-index__account">
+                    <span class="transfers-index__account-label">To:</span>
+                    <span class="transfers-index__account-name"><%= transfer.credit_account.name %></span>
+                  </div>
+                  <div class="transfers-index__date">
+                    <span class="transfers-index__date-label">Posted on:</span>
+                    <span class="transfers-index__date-value"><%= transfer.posted_on %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @pending_transfers.empty? && @posted_transfers.empty? %>
+      <div class="page__empty">
+        <p>No transfers yet. Create your first transfer to get started.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

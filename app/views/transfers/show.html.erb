@@ -1,0 +1,70 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Transfer Details</h1>
+    <div class="page__header-actions">
+      <% if @transfer.pending? %>
+        <%= link_to "Post Transfer", post_organization_transfer_path(current_organization, @transfer), 
+            method: :patch, 
+            class: "button button--primary",
+            data: { confirm: "Are you sure you want to post this transfer?" } %>
+      <% end %>
+      <%= edit_button edit_organization_transfer_path(current_organization, @transfer) %>
+    </div>
+  </div>
+
+  <div class="page__content">
+    <div class="transfer-show">
+      <div class="transfer-show__header">
+        <div class="transfer-show__amount">
+          <span class="transfer-show__amount-value"><%= number_to_currency(@transfer.amount) %></span>
+          <span class="transfer-show__state transfer-show__state--<%= @transfer.state %>">
+            <%= @transfer.state.humanize %>
+          </span>
+        </div>
+      </div>
+
+      <div class="transfer-show__details">
+        <div class="transfer-show__detail">
+          <span class="transfer-show__label">From Account:</span>
+          <span class="transfer-show__value">
+            <%= link_to @transfer.debit_account.name, 
+                organization_account_path(current_organization, @transfer.debit_account),
+                class: "transfer-show__account-link" %>
+          </span>
+        </div>
+
+        <div class="transfer-show__detail">
+          <span class="transfer-show__label">To Account:</span>
+          <span class="transfer-show__value">
+            <%= link_to @transfer.credit_account.name, 
+                organization_account_path(current_organization, @transfer.credit_account),
+                class: "transfer-show__account-link" %>
+          </span>
+        </div>
+
+        <div class="transfer-show__detail">
+          <span class="transfer-show__label">Pending Date:</span>
+          <span class="transfer-show__value"><%= @transfer.pending_on %></span>
+        </div>
+
+        <% if @transfer.posted? %>
+          <div class="transfer-show__detail">
+            <span class="transfer-show__label">Posted Date:</span>
+            <span class="transfer-show__value"><%= @transfer.posted_on %></span>
+          </div>
+        <% end %>
+
+        <% if @transfer.schedule %>
+          <div class="transfer-show__detail">
+            <span class="transfer-show__label">Schedule:</span>
+            <span class="transfer-show__value">
+              <%= link_to @transfer.schedule.name, 
+                  organization_schedule_path(current_organization, @transfer.schedule),
+                  class: "transfer-show__schedule-link" %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

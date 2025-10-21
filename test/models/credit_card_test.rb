@@ -118,7 +118,7 @@ class CreditCardTest < ActiveSupport::TestCase
     assert_difference "Schedule.count" => 1 do
       new_credit_card = organizations(:lazaro_personal).accounts.create!(
         name: "Auto Credit Card",
-        kind: "credit_card",
+        kind: "Account::CreditCard",
         metadata: { due_day: 15, statement_day: 1, credit_limit: 3000 }
       )
     end
@@ -136,7 +136,7 @@ class CreditCardTest < ActiveSupport::TestCase
         assert_raises(ActiveRecord::RecordInvalid) do
           organizations(:lazaro_personal).accounts.create!(
             name: "Incomplete Credit Card",
-            kind: "credit_card",
+            kind: "Account::CreditCard",
             due_day: 15 # Missing statement_day
           )
         end
@@ -151,7 +151,7 @@ class CreditCardTest < ActiveSupport::TestCase
     assert_no_difference "Schedule.count" do
       organizations(:lazaro_personal).accounts.create!(
         name: "No Cash Credit Card",
-        kind: "credit_card",
+        kind: "Account::CreditCard",
         metadata: { due_day: 15, statement_day: 1, credit_limit: 2000 }
       )
     end
