@@ -1,38 +1,31 @@
 # Agent Development Guide
 
-## Build/Test/Lint Commands
+**Note**: This project uses [bd (beads)](https://github.com/steveyegge/beads)
+for issue tracking. Use `bd` commands instead of markdown TODOs.
+See BEADS.md for workflow details.
 
+## Build/Test/Lint Commands
 ```bash
 # Run all tests
 bin/rails test
-
 # Run specific test file
 bin/rails test test/models/user_test.rb
-
 # Run specific test method
 bin/rails test test/models/user_test.rb -n test_should_be_valid
-
 # Run system tests
 bin/rails test:system
-
 # Run linting
 bin/rubocop
-
 # Run security scan
 bin/brakeman
-
 # Check JavaScript dependencies
 bin/importmap audit
-
 # Setup database
 bin/rails db:setup
-
 # Start development server
 bin/dev
-
 # Run Ruby code in Rails context (for debugging)
 bin/rails runner "puts User.count"
-
 # Avoid using bin/rails console - it's meant for interactive REPL only
 ```
 
