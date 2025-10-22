@@ -116,19 +116,19 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create posted transfer and update account balances" do
-    from_account = accounts(:lazaro_cash)
-    to_account = accounts(:expense_account)
+    to_account = accounts(:lazaro_cash)      # Money goes TO this account (debit_account)
+    from_account = accounts(:expense_account) # Money comes FROM this account (credit_account)
 
     # Store initial balances
-    initial_from_debits = from_account.debits
-    initial_to_credits = to_account.credits
+    initial_to_debits = to_account.debits
+    initial_from_credits = from_account.credits
 
     assert_difference("Transfer.count") do
       post organization_transfers_url(@organization), params: {
         transfer: {
           amount: "75.00",
-          debit_account_id: from_account.id,
-          credit_account_id: to_account.id,
+          debit_account_id: to_account.id,     # TO account gets debited
+          credit_account_id: from_account.id,  # FROM account gets credited
           status: "posted"
         }
       }
@@ -139,12 +139,14 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     assert_equal 75.0, transfer.amount
 
     # Reload accounts to get updated values
-    from_account.reload
     to_account.reload
+    from_account.reload
 
-    # Assert that account balances were updated
-    assert_equal initial_from_debits + 75.0, from_account.debits, "From account debits should increase by transfer amount"
-    assert_equal initial_to_credits + 75.0, to_account.credits, "To account credits should increase by transfer amount"
+    # Assert that account balances were updated correctly
+    # TO account should get DEBITS (money receiving)
+    assert_equal initial_to_debits + 75.0, to_account.debits, "TO account debits should increase by transfer amount"
+    # FROM account should get CREDITS (money leaving)
+    assert_equal initial_from_credits + 75.0, from_account.credits, "FROM account credits should increase by transfer amount"
   end
 
   private
