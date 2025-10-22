@@ -112,7 +112,7 @@ class Account < ApplicationRecord
   end
 
   def planned_debits_total(on_date)
-    total = 0
+    total = BigDecimal("0")
     debit_schedules.each do |schedule|
       dates = schedule.transfer_dates(on_date)
       # Only include future dates (from today onwards) for planned balance
@@ -123,7 +123,7 @@ class Account < ApplicationRecord
   end
 
   def planned_credits_total(on_date)
-    total = 0
+    total = BigDecimal("0")
     credit_schedules.each do |schedule|
       dates = schedule.transfer_dates(on_date)
       # Only include future dates (from today onwards) for planned balance

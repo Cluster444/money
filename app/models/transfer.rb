@@ -22,6 +22,7 @@ class Transfer < ApplicationRecord
   scope :pending, -> { where(state: :pending) }
   scope :posted, -> { where(state: :posted) }
 
+  after_create :update_account_posted_balance, if: :posted?
   before_update :prevent_posted_update
   before_destroy :handle_deletion
 
@@ -47,6 +48,19 @@ class Transfer < ApplicationRecord
   end
 
   private
+
+  def update_account_posted_balance
+    # For newly created posted transfers, update account balances
+    transaction do
+      current_debit_cents = debit_account.debits_before_type_cast || 0
+      new_debit_cents = current_debit_cents + amount_before_type_cast
+      debit_account.update_column(:debits, new_debit_cents)
+
+      current_credit_cents = credit_account.credits_before_type_cast || 0
+      new_credit_cents = current_credit_cents + amount_before_type_cast
+      credit_account.update_column(:credits, new_credit_cents)
+    end
+  end
 
     def prevent_posted_update
       return unless posted?

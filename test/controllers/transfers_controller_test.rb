@@ -115,6 +115,38 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     assert_equal 12345, transfer.read_attribute(:amount)
   end
 
+  test "should create posted transfer and update account balances" do
+    from_account = accounts(:lazaro_cash)
+    to_account = accounts(:expense_account)
+
+    # Store initial balances
+    initial_from_debits = from_account.debits
+    initial_to_credits = to_account.credits
+
+    assert_difference("Transfer.count") do
+      post organization_transfers_url(@organization), params: {
+        transfer: {
+          amount: "75.00",
+          debit_account_id: from_account.id,
+          credit_account_id: to_account.id,
+          status: "posted"
+        }
+      }
+    end
+
+    transfer = Transfer.last
+    assert_equal "posted", transfer.state
+    assert_equal 75.0, transfer.amount
+
+    # Reload accounts to get updated values
+    from_account.reload
+    to_account.reload
+
+    # Assert that account balances were updated
+    assert_equal initial_from_debits + 75.0, from_account.debits, "From account debits should increase by transfer amount"
+    assert_equal initial_to_credits + 75.0, to_account.credits, "To account credits should increase by transfer amount"
+  end
+
   private
 
   def login_as(user)
