@@ -30,8 +30,8 @@
             </div>
           <% end %>
           <div class="accounts-index__actions">
-            <%= link_to "In", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
-            <%= link_to "Out", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+            <%= link_to "In", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+            <%= link_to "Out", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
           </div>
         </div>
       <% end %>
@@ -61,8 +61,8 @@
             </div>
           <% end %>
           <div class="accounts-index__actions">
-            <%= link_to "In", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
-            <%= link_to "Out", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+            <%= link_to "In", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+            <%= link_to "Out", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
           </div>
         </div>
       <% end %>
@@ -92,8 +92,8 @@
              </div>
            <% end %>
            <div class="accounts-index__actions">
-             <%= link_to "In", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
-             <%= link_to "Out", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+             <%= link_to "In", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+             <%= link_to "Out", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
            </div>
          </div>
        <% end %>
@@ -123,8 +123,8 @@
              </div>
            <% end %>
            <div class="accounts-index__actions">
-             <%= link_to "In", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
-             <%= link_to "Out", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+             <%= link_to "In", new_organization_transfer_path(current_organization, debit_account_id: account.id), class: "btn btn--small btn--secondary" %>
+             <%= link_to "Out", new_organization_transfer_path(current_organization, credit_account_id: account.id), class: "btn btn--small btn--secondary" %>
            </div>
          </div>
        <% end %>
