@@ -26,8 +26,8 @@ cash_with_balance:
   kind: Account::Cash
   name: "Cash Account with Balance"
   active: true
-  debits: 1000
-  credits: 200
+  debits: 10.00
+  credits: 2.00
   metadata: {}
   organization: lazaro_personal
 
@@ -76,8 +76,8 @@ vendor_with_balance:
   kind: Account::Vendor
   name: "Vendor Account with Balance"
   active: true
-  debits: 100
-  credits: 500
+  debits: 1.00
+  credits: 5.00
   metadata: {}
   organization: lazaro_personal
 
@@ -118,7 +118,7 @@ customer_with_balance:
   kind: Account::Customer
   name: "Customer Account with Balance"
   active: true
-  debits: 200
-  credits: 1000
+  debits: 2.00
+  credits: 10.00
   metadata: {}
   organization: lazaro_personal

@@ -25,12 +25,12 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create adjustment to increase balance" do
     initial_balance = @account.posted_balance
-    target_balance = initial_balance + 10000  # Increase by $100
+    target_balance = initial_balance + 100.00  # Increase by $100
 
     assert_difference("Adjustment.count", 1) do
       post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
-          target_balance: (target_balance / 100.0).to_s,  # Convert to dollars
+          target_balance: target_balance.to_s,  # Already in dollars
           note: "Test adjustment to increase balance"
         }
       }
@@ -44,22 +44,22 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
 
     adjustment = Adjustment.last
     assert_equal @account, adjustment.account
-    assert_equal 10000, adjustment.debit_amount  # Should create a debit for cash account
+    assert_equal 100.00, adjustment.debit_amount  # Should create a debit for cash account
     assert_nil adjustment.credit_amount
     assert_equal "Test adjustment to increase balance", adjustment.note
   end
 
   test "should create adjustment to decrease balance" do
     # First make sure account has enough balance
-    @account.update!(debits: 20000, credits: 0)  # Set balance to $200
+    @account.update!(debits: 200.00, credits: 0)  # Set balance to $200
 
     initial_balance = @account.posted_balance
-    target_balance = initial_balance - 5000  # Decrease by $50
+    target_balance = initial_balance - 50.00  # Decrease by $50
 
     assert_difference("Adjustment.count", 1) do
       post organization_account_adjustments_url(@account.organization, @account), params: {
         adjustment: {
-          target_balance: (target_balance / 100.0).to_s,  # Convert to dollars
+          target_balance: target_balance.to_s,  # Already in dollars
           note: "Test adjustment to decrease balance"
         }
       }
@@ -73,7 +73,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
 
     adjustment = Adjustment.last
     assert_equal @account, adjustment.account
-    assert_equal 5000, adjustment.credit_amount  # Should create a credit for cash account
+    assert_equal 50.00, adjustment.credit_amount  # Should create a credit for cash account
     assert_nil adjustment.debit_amount
     assert_equal "Test adjustment to decrease balance", adjustment.note
   end
@@ -136,9 +136,9 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should update adjustment" do
     # Create initial adjustment
-    @account.update!(debits: 10000, credits: 0)  # Start with $100 balance
+    @account.update!(debits: 100.00, credits: 0)  # Start with $100 balance
     adjustment = @account.adjustments.create!(
-      debit_amount: 5000,
+      debit_amount: 50.00,
       note: "Original note"
     )
     initial_balance = @account.posted_balance  # Should be $150
@@ -155,19 +155,19 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Adjustment was successfully updated.", flash[:notice]
 
     @account.reload
-    assert_equal 20000, @account.posted_balance  # Should be $200
+    assert_equal 200.00, @account.posted_balance  # Should be $200
 
     adjustment.reload
-    assert_equal 10000, adjustment.debit_amount  # Should be $100 debit
+    assert_equal 100.00, adjustment.debit_amount  # Should be $100 debit
     assert_nil adjustment.credit_amount
     assert_equal "Updated note", adjustment.note
   end
 
   test "should update adjustment to decrease balance" do
     # Create initial adjustment
-    @account.update!(debits: 20000, credits: 0)  # Start with $200 balance
+    @account.update!(debits: 200.00, credits: 0)  # Start with $200 balance
     adjustment = @account.adjustments.create!(
-      debit_amount: 10000,
+      debit_amount: 100.00,
       note: "Original note"
     )
     initial_balance = @account.posted_balance  # Should be $300
@@ -184,17 +184,17 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Adjustment was successfully updated.", flash[:notice]
 
     @account.reload
-    assert_equal 15000, @account.posted_balance  # Should be $150
+    assert_equal 150.00, @account.posted_balance  # Should be $150
 
     adjustment.reload
-    assert_equal 5000, adjustment.credit_amount  # Should be $50 credit (decrease)
+    assert_equal 50.00, adjustment.credit_amount  # Should be $50 credit (decrease)
     assert_nil adjustment.debit_amount
     assert_equal "Updated note", adjustment.note
   end
 
   test "should not update adjustment with invalid data" do
     adjustment = @account.adjustments.create!(
-      debit_amount: 10000,
+      debit_amount: 100.00,
       note: "Original note"
     )
 
@@ -208,7 +208,7 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
 
     adjustment.reload
-    assert_equal 10000, adjustment.debit_amount
+    assert_equal 100.00, adjustment.debit_amount
     assert_equal "Original note", adjustment.note
   end
 
@@ -310,10 +310,10 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     @account.reload
-    assert_equal 12345, @account.posted_balance  # Should be exactly $123.45
+    assert_equal 123.45, @account.posted_balance  # Should be exactly $123.45
 
     adjustment = Adjustment.last
-    assert_equal 12345, adjustment.debit_amount  # Should create debit for cash account
+    assert_equal 123.45, adjustment.debit_amount  # Should create debit for cash account
   end
 
   test "should handle rounding correctly" do
@@ -329,10 +329,10 @@ class AdjustmentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     @account.reload
-    assert_equal 1001, @account.posted_balance  # 10.005 * 100 = 1000.5, rounds to 1001
+    assert_equal 10.01, @account.posted_balance  # 10.005 rounds to 10.01
 
     adjustment = Adjustment.last
-    assert_equal 1001, adjustment.debit_amount
+    assert_equal 10.01, adjustment.debit_amount
   end
 
   private

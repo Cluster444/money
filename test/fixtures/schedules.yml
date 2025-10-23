@@ -3,7 +3,7 @@
 # Monthly schedule starting 2 weeks ago, amount 1234
 monthly_schedule:
   name: "Monthly Revenue Transfer"
-  amount: 1234
+  amount: 12.34
   period: month
   frequency: 1
   starts_on: <%= 2.weeks.ago.to_date %>
@@ -16,7 +16,7 @@ monthly_schedule:
 # Future start date with no period - should produce single date
 future_single_date:
   name: "Future Single Transfer"
-  amount: 500
+  amount: 5.00
   period:
   frequency:
   starts_on: <%= 2.weeks.from_now.to_date %>
@@ -31,7 +31,7 @@ future_single_date:
 # Large payment schedule for testing negative balance scenarios
 large_payment_schedule:
   name: "Large payment"
-  amount: 1000
+  amount: 10.00
   period:
   frequency:
   starts_on: <%= 5.days.from_now.to_date %>
@@ -44,7 +44,7 @@ large_payment_schedule:
 # Small daily schedule for testing same-day scenarios
 today_payment_schedule:
   name: "Today's payment"
-  amount: 50
+  amount: 0.50
   period:
   frequency:
   starts_on: <%= Date.today %>
@@ -70,7 +70,7 @@ credit_card_payment_schedule:
 # Past start date with no period - should produce no new dates
 past_no_dates:
   name: "Past One-time Transfer"
-  amount: 300
+  amount: 3.00
   period:
   frequency:
   starts_on: <%= 2.weeks.ago.to_date %>
@@ -82,7 +82,7 @@ past_no_dates:
 # Weekly schedule with period, no end date
 weekly_schedule:
   name: "Weekly Expense Transfer"
-  amount: 100
+  amount: 1.00
   period: week
   frequency: 1
   starts_on: <%= 3.weeks.ago.to_date %>
@@ -94,7 +94,7 @@ weekly_schedule:
 # Monthly schedule with ends_on, testing date before ends_on
 monthly_with_end_before:
   name: "Monthly Transfer with End Date"
-  amount: 750
+  amount: 7.50
   period: month
   frequency: 1
   starts_on: <%= 2.months.ago.to_date %>
@@ -106,7 +106,7 @@ monthly_with_end_before:
 # Monthly schedule with ends_on, testing date after ends_on
 monthly_with_end_after:
   name: "Monthly Transfer with Past End Date"
-  amount: 600
+  amount: 6.00
   period: month
   frequency: 1
   starts_on: <%= 3.months.ago.to_date %>
@@ -118,7 +118,7 @@ monthly_with_end_after:
 # Daily schedule that should generate a transfer for today
 daily_schedule_for_today:
   name: "Daily Transfer for Today"
-  amount: 250
+  amount: 2.50
   period: day
   frequency: 1
   starts_on: <%= 3.days.ago.to_date %>
@@ -130,7 +130,7 @@ daily_schedule_for_today:
 # Large payment schedule for testing negative balance scenarios
 large_payment_schedule:
   name: "Large payment"
-  amount: 1000
+  amount: 10.00
   period:
   frequency:
   starts_on: <%= 5.days.from_now.to_date %>
@@ -142,7 +142,7 @@ large_payment_schedule:
 # Small daily schedule for testing same-day scenarios
 today_payment_schedule:
   name: "Today's payment"
-  amount: 50
+  amount: 0.50
   period:
   frequency:
   starts_on: <%= Date.today %>
@@ -154,7 +154,7 @@ today_payment_schedule:
 # Weekly schedule for testing weekly calculations
 weekly_payment_schedule:
   name: "Weekly payment"
-  amount: 25
+  amount: 0.25
   period: week
   frequency: 1
   starts_on: <%= Date.today %>

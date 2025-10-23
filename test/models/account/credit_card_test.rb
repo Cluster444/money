@@ -78,7 +78,7 @@ class Account::CreditCardTest < ActiveSupport::TestCase
       name: "Test Credit Card",
       due_day: 15,
       statement_day: 1,
-      credit_limit: 5000,
+      credit_limit: 50.00,
       organization: organizations(:lazaro_personal)
     )
 
@@ -125,7 +125,7 @@ class Account::CreditCardTest < ActiveSupport::TestCase
       name: "Test Credit Card",
       due_day: 15,
       statement_day: 1,
-      credit_limit: 5000,
+      credit_limit: 50.00,
       organization: organizations(:lazaro_personal)
     )
 
@@ -135,8 +135,8 @@ class Account::CreditCardTest < ActiveSupport::TestCase
   test "should get and set credit_limit for credit card" do
     credit_card = Account::CreditCard.new(name: "Test Credit Card", organization: organizations(:lazaro_personal))
 
-    credit_card.credit_limit = 2500.50
-    assert_equal 2500.50, credit_card.credit_limit
+    credit_card.    credit_limit = 25.005
+    assert_equal 25.005, credit_card.credit_limit
   end
 
   test "should get and set due_day for credit card" do
@@ -159,8 +159,8 @@ class Account::CreditCardTest < ActiveSupport::TestCase
 
     credit_card_account.posted_balance = 2000
 
-    assert_equal 0, credit_card_account.read_attribute(:debits)
-    assert_equal 200000, credit_card_account.read_attribute(:credits)
+    assert_equal 0, credit_card_account.debits
+    assert_equal 2000.00, credit_card_account.credits
   end
 
   test "should allow zero initial balance for credit card" do
@@ -168,8 +168,8 @@ class Account::CreditCardTest < ActiveSupport::TestCase
 
     credit_card_account.posted_balance = 0
 
-    assert_equal 0, credit_card_account.read_attribute(:debits)
-    assert_equal 0, credit_card_account.read_attribute(:credits)
+    assert_equal 0, credit_card_account.debits
+    assert_equal 0, credit_card_account.credits
   end
 
   test "should reject negative initial balance for credit card" do

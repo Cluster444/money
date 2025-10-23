@@ -767,7 +767,7 @@ test "post! should be transactional" do
     assert_equal large_amount, transfer.amount
 
     # Verify it's stored as cents correctly
-    assert_equal 99999, transfer.read_attribute(:amount)
+    assert_equal 999.99, transfer.amount
   end
 
   test "should handle transfer amount exactly equal to account balance" do
@@ -802,8 +802,8 @@ test "post! should be transactional" do
     assert_equal initial_from_credits + 0.01, from_account.credits
     assert_equal initial_to_debits + 0.01, to_account.debits
 
-    # Verify stored as cents correctly
-    assert_equal 1, transfer.read_attribute(:amount)
+    # Verify stored as dollars correctly
+    assert_equal 0.01, transfer.amount
   end
 
   # Error scenario tests
@@ -1150,7 +1150,6 @@ test "post! should be transactional" do
     to_account.reload
 
     # FROM account should have credits increased (money left)
-    assert_equal from_account.credits, (from_account.credits_before_type_cast / 100.0)
     expected_from_balance = initial_from_balance - 3.50
     actual_from_balance = from_account.debits - from_account.credits
     assert_equal expected_from_balance, actual_from_balance
@@ -2002,11 +2001,11 @@ test "post! should be transactional" do
     # This test demonstrates how maximum transfer amounts work through account constraints
 
     # For cash accounts: maximum transfer = current balance (debits - credits)
-    cash_account = accounts(:cash_with_balance)  # Has $8.00 balance (1000-200 cents)
+    cash_account = accounts(:cash_with_balance)  # Has $8.00 balance (10.00-2.00 dollars)
     vendor_account = accounts(:extra_vendor)
 
     # The maximum amount that can be transferred FROM this cash account is $8.00
-    max_cash_transfer_dollars = (cash_account.debits_before_type_cast - cash_account.credits_before_type_cast) / 100.0
+    max_cash_transfer_dollars = cash_account.debits - cash_account.credits
 
     # Transfer within limit should succeed
     transfer_within_limit = Transfer.new(

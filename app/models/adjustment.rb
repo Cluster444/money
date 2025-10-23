@@ -1,6 +1,4 @@
 class Adjustment < ApplicationRecord
-  include Monetize
-
   belongs_to :account
 
   validates :account, presence: true
@@ -9,7 +7,7 @@ class Adjustment < ApplicationRecord
 
   attribute :target_balance, :decimal
 
-  monetize :credit_amount, :debit_amount
+
 
   after_create :update_account_balance
   after_update :handle_balance_update

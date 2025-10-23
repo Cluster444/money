@@ -57,8 +57,8 @@ class Account::CustomerTest < ActiveSupport::TestCase
 
     customer_account.posted_balance = 1000
 
-    assert_equal 0, customer_account.read_attribute(:debits)
-    assert_equal 100000, customer_account.read_attribute(:credits)
+    assert_equal 0, customer_account.debits
+    assert_equal 1000.00, customer_account.credits
   end
 
   test "should allow zero initial balance" do
@@ -83,7 +83,7 @@ class Account::CustomerTest < ActiveSupport::TestCase
 
     customer_account.posted_balance = 12345
 
-    assert_equal 1234500, customer_account.read_attribute(:credits)
+    assert_equal 12345.00, customer_account.credits
   end
 
   test "should work with float amounts that are whole numbers" do
@@ -91,7 +91,7 @@ class Account::CustomerTest < ActiveSupport::TestCase
 
     customer_account.posted_balance = 1000.0
 
-    assert_equal 100000, customer_account.read_attribute(:credits)
+    assert_equal 1000.00, customer_account.credits
   end
 
   test "should preserve existing balance when setting to same amount" do
@@ -105,7 +105,7 @@ class Account::CustomerTest < ActiveSupport::TestCase
   test "should override existing balance when setting new amount" do
     @account.posted_balance = 9999
 
-    assert_equal 999900, @account.read_attribute(:credits)
+    assert_equal 9999.00, @account.credits
   end
 
   test "should handle string input for posted_balance" do
@@ -113,7 +113,7 @@ class Account::CustomerTest < ActiveSupport::TestCase
 
     customer_account.posted_balance = "1500.50"
 
-    assert_equal 150050, customer_account.read_attribute(:credits)
+    assert_equal 1500.50, customer_account.credits
   end
 
   # Customer accounts should not have credit card specific fields

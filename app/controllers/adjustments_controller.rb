@@ -50,7 +50,7 @@ class AdjustmentsController < ApplicationController
   def adjustment_params
     params.require(:adjustment).permit(:target_balance, :note).tap do |adjustment_params|
       if adjustment_params[:target_balance].present?
-        target_balance_cents = dollars_to_cents(adjustment_params[:target_balance])
+        target_balance = BigDecimal(adjustment_params[:target_balance].to_s)
 
         # For updates, we need to calculate based on what the balance would be without this adjustment
         if @adjustment&.persisted?
@@ -62,7 +62,7 @@ class AdjustmentsController < ApplicationController
         end
 
         # Calculate the difference and determine if it's a debit or credit
-        difference = target_balance_cents - current_balance
+        difference = target_balance - current_balance
 
         if difference > 0
           # Need to increase balance - for cash accounts this means debit
@@ -92,10 +92,5 @@ class AdjustmentsController < ApplicationController
         adjustment_params.delete(:target_balance)
       end
     end
-  end
-
-  def dollars_to_cents(dollars)
-    return nil if dollars.nil?
-    (BigDecimal(dollars.to_s) * 100).round.to_i
   end
 end

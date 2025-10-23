@@ -77,8 +77,8 @@ test "should calculate pending balance as pending_debits minus pending_credits" 
 
     new_cash.posted_balance = 2000
 
-    assert_equal 200000, new_cash.read_attribute(:debits)
-    assert_equal 0, new_cash.read_attribute(:credits)
+    assert_equal 2000.00, new_cash.debits
+    assert_equal 0, new_cash.credits
   end
 
   test "should set initial balance by setting debits for vendor accounts" do
@@ -86,8 +86,8 @@ test "should calculate pending balance as pending_debits minus pending_credits" 
 
     new_vendor.posted_balance = 1500
 
-    assert_equal 150000, new_vendor.read_attribute(:debits)
-    assert_equal 0, new_vendor.read_attribute(:credits)
+    assert_equal 1500.00, new_vendor.debits
+    assert_equal 0, new_vendor.credits
   end
 
   test "should handle zero initial balance for debtor accounts" do
@@ -95,8 +95,8 @@ test "should calculate pending balance as pending_debits minus pending_credits" 
 
     new_cash.posted_balance = 0
 
-    assert_equal 0, new_cash.read_attribute(:debits)
-    assert_equal 0, new_cash.read_attribute(:credits)
+    assert_equal 0, new_cash.debits
+    assert_equal 0, new_cash.credits
   end
 
   test "should reject negative initial balance for debtor accounts" do

@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_22_212019) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_23_123456) do
   create_table "accounts", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
-    t.bigint "credits", default: 0, null: false
-    t.bigint "debits", default: 0, null: false
+    t.decimal "credits", precision: 15, scale: 2
+    t.decimal "debits", precision: 15, scale: 2
     t.string "kind", null: false
     t.json "metadata", default: {}, null: false
     t.string "name", null: false
@@ -27,8 +27,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_212019) do
   create_table "adjustments", force: :cascade do |t|
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
-    t.bigint "credit_amount"
-    t.bigint "debit_amount"
+    t.decimal "credit_amount", precision: 15, scale: 2
+    t.decimal "debit_amount", precision: 15, scale: 2
     t.text "note"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_adjustments_on_account_id"
@@ -43,7 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_212019) do
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.bigint "amount"
+    t.decimal "amount", precision: 15, scale: 2
     t.datetime "created_at", null: false
     t.integer "credit_account_id", null: false
     t.integer "debit_account_id", null: false
@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_212019) do
   end
 
   create_table "transfers", force: :cascade do |t|
-    t.bigint "amount", null: false
+    t.decimal "amount", precision: 15, scale: 2
     t.datetime "created_at", null: false
     t.integer "credit_account_id", null: false
     t.integer "debit_account_id", null: false

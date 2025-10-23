@@ -253,7 +253,7 @@ test "should get edit" do
         name: "Updated Credit Card Name",
         due_day: 20,
         statement_day: 5,
-        credit_limit: 6000
+        credit_limit: 60.00
       }
     }
     assert_redirected_to organization_account_url(credit_card.organization, credit_card)
@@ -263,7 +263,7 @@ test "should get edit" do
     assert_equal "Updated Credit Card Name", credit_card.name
     assert_equal 20, credit_card.due_day
     assert_equal 5, credit_card.statement_day
-    assert_equal 6000, credit_card.credit_limit
+    assert_equal 60.00, credit_card.credit_limit
   end
 
   test "should not update credit card account with invalid due_day" do

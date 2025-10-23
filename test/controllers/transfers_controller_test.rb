@@ -112,7 +112,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     transfer = Transfer.last
     assert_equal 123.45, transfer.amount
     # Verify it's stored as cents in the database
-    assert_equal 12345, transfer.read_attribute(:amount)
+    assert_equal 123.45, transfer.amount
   end
 
   test "should create posted transfer and update account balances" do

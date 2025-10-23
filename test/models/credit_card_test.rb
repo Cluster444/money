@@ -6,8 +6,8 @@ class CreditCardTest < ActiveSupport::TestCase
   end
 
   test "posted_balance should be credits minus debits for credit cards" do
-    accounts(:lazaro_credit_card).update!(debits: 1000, credits: 2500)
-    assert_equal 1500, accounts(:lazaro_credit_card).posted_balance
+    accounts(:lazaro_credit_card).update!(debits: 10.00, credits: 25.00)
+    assert_equal 15.00, accounts(:lazaro_credit_card).posted_balance
   end
 
   test "credit card with zero balance should have zero posted_balance" do

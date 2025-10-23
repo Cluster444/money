@@ -9,7 +9,7 @@ class AdjustmentMoneyConversionTest < ActionDispatch::IntegrationTest
 
   test "full adjustment flow with target balance inputs" do
     # Start with initial balance
-    @account.update!(debits: 10000, credits: 5000)  # Set initial balance to $50
+    @account.update!(debits: 100.00, credits: 50.00)  # Set initial balance to $50
     initial_balance = @account.posted_balance
 
     # Create adjustment with target balance
@@ -27,11 +27,11 @@ class AdjustmentMoneyConversionTest < ActionDispatch::IntegrationTest
 
     # Verify balance was updated correctly to target
     @account.reload
-    assert_equal 22200, @account.posted_balance
+    assert_equal 222.00, @account.posted_balance
 
     # Verify adjustment was stored with correct amount
     adjustment = Adjustment.last
-    assert_equal 17200, adjustment.debit_amount  # 22200 - 5000 = 17200
+    assert_equal 172.00, adjustment.debit_amount  # 222.00 - 50.00 = 172.00
     assert_equal "Test adjustment with target balance", adjustment.note
 
     # Edit the adjustment
@@ -51,11 +51,11 @@ class AdjustmentMoneyConversionTest < ActionDispatch::IntegrationTest
 
     # Verify balance was updated correctly
     @account.reload
-    assert_equal 33333, @account.posted_balance  # Should be exactly $333.33
+    assert_equal 333.33, @account.posted_balance  # Should be exactly $333.33
 
     # Verify adjustment was updated
     adjustment.reload
-    assert_equal 28333, adjustment.debit_amount  # 33333 - 5000 = 28333
+    assert_equal 283.33, adjustment.debit_amount  # 333.33 - 50.00 = 283.33
     assert_equal "Updated adjustment", adjustment.note
 
     # Delete the adjustment

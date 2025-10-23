@@ -78,8 +78,8 @@ test "should calculate pending balance as pending_credits minus pending_debits" 
 
     new_credit_card.posted_balance = 2000
 
-    assert_equal 0, new_credit_card.read_attribute(:debits)
-    assert_equal 200000, new_credit_card.read_attribute(:credits)
+    assert_equal 0, new_credit_card.debits
+    assert_equal 2000.00, new_credit_card.credits
   end
 
   test "should set initial balance by setting credits for customer accounts" do
@@ -87,8 +87,8 @@ test "should calculate pending balance as pending_credits minus pending_debits" 
 
     new_customer.posted_balance = 1500
 
-    assert_equal 0, new_customer.read_attribute(:debits)
-    assert_equal 150000, new_customer.read_attribute(:credits)
+    assert_equal 0, new_customer.debits
+    assert_equal 1500.00, new_customer.credits
   end
 
   test "should handle zero initial balance for creditor accounts" do
@@ -96,8 +96,8 @@ test "should calculate pending balance as pending_credits minus pending_debits" 
 
     new_credit_card.posted_balance = 0
 
-    assert_equal 0, new_credit_card.read_attribute(:debits)
-    assert_equal 0, new_credit_card.read_attribute(:credits)
+    assert_equal 0, new_credit_card.debits
+    assert_equal 0, new_credit_card.credits
   end
 
   test "should reject negative initial balance for creditor accounts" do

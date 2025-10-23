@@ -3,7 +3,7 @@
 # Posted transfer from 2 weeks ago, amount 1234, related to schedule
 posted_transfer:
   state: posted
-  amount: 1234
+  amount: 12.34
   pending_on: <%= 2.weeks.ago.to_date %>
   posted_on: <%= 2.weeks.ago.to_date %>
   debit_account: revenue_account
@@ -13,7 +13,7 @@ posted_transfer:
 # Pending transfer from 1 day ago, amount 2222, no schedule
 pending_transfer:
   state: pending
-  amount: 2222
+  amount: 22.22
   pending_on: <%= 1.day.ago.to_date %>
   posted_on:
   debit_account: lazaro_checking

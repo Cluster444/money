@@ -1,6 +1,4 @@
 class Transfer < ApplicationRecord
-  include Monetize
-
   enum :state, { pending: "pending", posted: "posted" }
 
   validates :state, presence: true, inclusion: { in: states.values }
@@ -13,7 +11,7 @@ class Transfer < ApplicationRecord
   validate :credit_card_balance_constraint
   validate :cash_account_balance_constraint
 
-  monetize :amount
+
 
   belongs_to :debit_account, class_name: "Account"
   belongs_to :credit_account, class_name: "Account"

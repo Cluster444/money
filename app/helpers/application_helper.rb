@@ -19,7 +19,7 @@ module ApplicationHelper
   end
 
   def money_field(form, method, options = {})
-    # Get the value (already in dollars due to monetize concern)
+    # Get the value (already in dollars)
     value = form.object.send(method)
     display_value = value.present? ? value.to_s : ""
 
@@ -33,16 +33,6 @@ module ApplicationHelper
     )
 
     form.number_field(method, money_options)
-  end
-
-  def cents_to_dollars(cents)
-    return nil if cents.nil?
-    cents / 100.0
-  end
-
-  def dollars_to_cents(dollars)
-    return nil if dollars.nil?
-    (BigDecimal(dollars.to_s) * 100).round.to_i
   end
 
   def current_view

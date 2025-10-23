@@ -1,6 +1,4 @@
 class Account < ApplicationRecord
-  include Monetize
-
   self.inheritance_column = "kind"
 
   # Use the base class name for form fields to avoid STI class names in field names
@@ -15,7 +13,9 @@ class Account < ApplicationRecord
   validates :debits, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :credits, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  monetize :debits, :credits
+  before_validation :set_default_balances, on: :create
+
+
 
   has_many :debit_transfers, class_name: "Transfer", foreign_key: :debit_account_id, dependent: :destroy
   has_many :credit_transfers, class_name: "Transfer", foreign_key: :credit_account_id, dependent: :destroy
@@ -131,5 +131,12 @@ class Account < ApplicationRecord
       total += future_dates.count * schedule.amount if schedule.amount.present?
     end
     total
+  end
+
+  private
+
+  def set_default_balances
+    self.debits ||= 0.0
+    self.credits ||= 0.0
   end
 end
