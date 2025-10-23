@@ -7,7 +7,7 @@ posted_transfer:
   pending_on: <%= 2.weeks.ago.to_date %>
   posted_on: <%= 2.weeks.ago.to_date %>
   debit_account: revenue_account
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   schedule: monthly_schedule
 
 # Pending transfer from 1 day ago, amount 2222, no schedule
@@ -16,6 +16,6 @@ pending_transfer:
   amount: 2222
   pending_on: <%= 1.day.ago.to_date %>
   posted_on:
-  debit_account: lazaro_cash
+  debit_account: lazaro_checking
   credit_account: expense_account
   schedule:

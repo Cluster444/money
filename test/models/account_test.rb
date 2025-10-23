@@ -2,7 +2,7 @@ require "test_helper"
 
 class AccountTest < ActiveSupport::TestCase
   setup do
-    @account = accounts(:lazaro_cash)
+    @account = accounts(:lazaro_checking)
   end
 
   # Validations tests
@@ -41,7 +41,7 @@ class AccountTest < ActiveSupport::TestCase
 
   test "should get all related transfers" do
     revenue_account = accounts(:revenue_account)
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     transfers = revenue_account.transfers
     assert transfers.count >= 1
@@ -80,7 +80,7 @@ class AccountTest < ActiveSupport::TestCase
   # Balance tests
   test "should calculate posted balance" do
     revenue_account = accounts(:revenue_account)
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Update account debits/credits to match posted transfer
     # Cash account must maintain positive balance, so set debits > credits
@@ -92,7 +92,7 @@ class AccountTest < ActiveSupport::TestCase
   end
 
   test "should calculate pending balance" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     expense_account = accounts(:expense_account)
 
     # Set initial posted balances - cash account must have positive balance
@@ -122,19 +122,20 @@ class AccountTest < ActiveSupport::TestCase
   test "cash scope should return only cash accounts" do
     cash_accounts = Account.cash
 
-    assert_includes cash_accounts, accounts(:lazaro_cash)
+    assert_includes cash_accounts, accounts(:lazaro_checking)
+    assert_includes cash_accounts, accounts(:lazaro_savings)
     assert_includes cash_accounts, accounts(:cash_with_balance)
     assert_includes cash_accounts, accounts(:extra_cash)
     assert_not_includes cash_accounts, accounts(:lazaro_vendor)
     assert_not_includes cash_accounts, accounts(:revenue_account)
     assert_not_includes cash_accounts, accounts(:expense_account)
-    assert_equal 3, cash_accounts.count
+    assert_equal 4, cash_accounts.count
   end
 
   test "vendor scope should return only vendor accounts" do
     vendor_accounts = Account.vendor
 
-    assert_not_includes vendor_accounts, accounts(:lazaro_cash)
+    assert_not_includes vendor_accounts, accounts(:lazaro_checking)
     assert_not_includes vendor_accounts, accounts(:cash_with_balance)
     assert_not_includes vendor_accounts, accounts(:extra_cash)
     assert_not_includes vendor_accounts, accounts(:lazaro_credit_card)
@@ -150,7 +151,7 @@ class AccountTest < ActiveSupport::TestCase
   test "credit_card scope should return only credit card accounts" do
     credit_card_accounts = Account.credit_card
 
-    assert_not_includes credit_card_accounts, accounts(:lazaro_cash)
+    assert_not_includes credit_card_accounts, accounts(:lazaro_checking)
     assert_not_includes credit_card_accounts, accounts(:cash_with_balance)
     assert_not_includes credit_card_accounts, accounts(:extra_cash)
     assert_includes credit_card_accounts, accounts(:lazaro_credit_card)
@@ -167,7 +168,7 @@ class AccountTest < ActiveSupport::TestCase
   test "customer scope should return only customer accounts" do
     customer_accounts = Account.customer
 
-    assert_not_includes customer_accounts, accounts(:lazaro_cash)
+    assert_not_includes customer_accounts, accounts(:lazaro_checking)
     assert_not_includes customer_accounts, accounts(:cash_with_balance)
     assert_not_includes customer_accounts, accounts(:extra_cash)
     assert_not_includes customer_accounts, accounts(:lazaro_credit_card)
@@ -187,15 +188,16 @@ class AccountTest < ActiveSupport::TestCase
     credit_card_accounts = Account.credit_card
     customer_accounts = Account.customer
 
-    assert_includes cash_accounts, accounts(:lazaro_cash)
+    assert_includes cash_accounts, accounts(:lazaro_checking)
+    assert_includes cash_accounts, accounts(:lazaro_savings)
     assert_includes cash_accounts, accounts(:cash_with_balance)
     assert_includes cash_accounts, accounts(:extra_cash)
     assert_not_includes cash_accounts, accounts(:lazaro_vendor)
     assert_not_includes cash_accounts, accounts(:lazaro_credit_card)
     assert_not_includes cash_accounts, accounts(:lazaro_customer)
-    assert_equal 3, cash_accounts.count
+    assert_equal 4, cash_accounts.count
 
-    assert_not_includes vendor_accounts, accounts(:lazaro_cash)
+    assert_not_includes vendor_accounts, accounts(:lazaro_checking)
     assert_not_includes vendor_accounts, accounts(:cash_with_balance)
     assert_not_includes vendor_accounts, accounts(:extra_cash)
     assert_not_includes vendor_accounts, accounts(:lazaro_credit_card)
@@ -207,7 +209,7 @@ class AccountTest < ActiveSupport::TestCase
     assert_includes vendor_accounts, accounts(:extra_vendor)
     assert_equal 5, vendor_accounts.count
 
-    assert_not_includes credit_card_accounts, accounts(:lazaro_cash)
+    assert_not_includes credit_card_accounts, accounts(:lazaro_checking)
     assert_not_includes credit_card_accounts, accounts(:cash_with_balance)
     assert_not_includes credit_card_accounts, accounts(:extra_cash)
     assert_includes credit_card_accounts, accounts(:lazaro_credit_card)
@@ -215,7 +217,7 @@ class AccountTest < ActiveSupport::TestCase
     assert_not_includes credit_card_accounts, accounts(:lazaro_customer)
     assert_equal 1, credit_card_accounts.count
 
-    assert_not_includes customer_accounts, accounts(:lazaro_cash)
+    assert_not_includes customer_accounts, accounts(:lazaro_checking)
     assert_not_includes customer_accounts, accounts(:cash_with_balance)
     assert_not_includes customer_accounts, accounts(:extra_cash)
     assert_not_includes customer_accounts, accounts(:lazaro_credit_card)
@@ -237,7 +239,7 @@ class AccountTest < ActiveSupport::TestCase
   end
 
 test "should calculate planned balance with one-time schedule" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     expense_account = accounts(:expense_account)
 
     future_date = Date.today + 30.days
@@ -257,7 +259,7 @@ test "should calculate planned balance with one-time schedule" do
   end
 
 test "should calculate planned balance with recurring schedule" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     revenue_account = accounts(:revenue_account)
 
     future_date = Date.today + 3.months
@@ -291,7 +293,7 @@ test "should handle planned balance with date before schedule starts" do
   end
 
 test "should handle planned balance with multiple schedules" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     expense_account = accounts(:expense_account)
     revenue_account = accounts(:revenue_account)
 
@@ -312,7 +314,7 @@ test "should handle planned balance with multiple schedules" do
   end
 
 test "should allow negative planned balance" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     future_date = Date.today + 10.days
 
@@ -323,7 +325,7 @@ test "should allow negative planned balance" do
   end
 
 test "should handle edge case with same day as schedule start" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     expense_account = accounts(:expense_account)
 
     # Use a future date to ensure we get planned transfers
@@ -342,7 +344,7 @@ test "should handle edge case with same day as schedule start" do
   end
 
   test "should handle planned balance with weekly schedule" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     expense_account = accounts(:expense_account)
 
     future_date = Date.today + 3.weeks

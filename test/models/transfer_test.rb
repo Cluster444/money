@@ -79,7 +79,7 @@ class TransferTest < ActiveSupport::TestCase
 
   test "should belong to credit_account" do
     assert_respond_to @posted_transfer, :credit_account
-    assert_equal accounts(:lazaro_cash), @posted_transfer.credit_account
+    assert_equal accounts(:lazaro_checking), @posted_transfer.credit_account
   end
 
   test "should belong to schedule optionally" do
@@ -92,7 +92,7 @@ class TransferTest < ActiveSupport::TestCase
   # Deletion tests
   test "should reverse account balances when deleting posted transfer" do
     revenue_account = accounts(:revenue_account)
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     transfer_amount = @posted_transfer.amount
 
@@ -113,7 +113,7 @@ class TransferTest < ActiveSupport::TestCase
   end
 
   test "should simply delete pending transfer without reversing balances" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     expense_account = accounts(:expense_account)
 
     initial_debits = cash_account.debits
@@ -152,7 +152,7 @@ class TransferTest < ActiveSupport::TestCase
     assert_equal 2.weeks.ago.to_date, @posted_transfer.pending_on
     assert_equal 2.weeks.ago.to_date, @posted_transfer.posted_on
     assert_equal accounts(:revenue_account), @posted_transfer.debit_account
-    assert_equal accounts(:lazaro_cash), @posted_transfer.credit_account
+    assert_equal accounts(:lazaro_checking), @posted_transfer.credit_account
     assert_equal schedules(:monthly_schedule), @posted_transfer.schedule
   end
 
@@ -161,7 +161,7 @@ class TransferTest < ActiveSupport::TestCase
     assert_equal 22.22, @pending_transfer.amount
     assert_equal 1.day.ago.to_date, @pending_transfer.pending_on
     assert_nil @pending_transfer.posted_on
-    assert_equal accounts(:lazaro_cash), @pending_transfer.debit_account
+    assert_equal accounts(:lazaro_checking), @pending_transfer.debit_account
     assert_equal accounts(:expense_account), @pending_transfer.credit_account
     assert_nil @pending_transfer.schedule
   end
@@ -344,7 +344,7 @@ test "post! should be transactional" do
       state: :pending,
       amount: 500,
       pending_on: Date.current,
-      debit_account: accounts(:lazaro_cash),
+      debit_account: accounts(:lazaro_checking),
       credit_account: accounts(:expense_account)
     )
 
@@ -389,7 +389,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up credit card with some existing balance
     credit_card.update!(debits: 2000, credits: 3000) # 1000 owed
@@ -414,7 +414,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up credit card with some existing balance
     credit_card.update!(debits: 2000, credits: 3000) # 1000 owed
@@ -438,7 +438,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up credit card with existing charges (credits > debits = amount owed)
     credit_card.update!(debits: 2000, credits: 3000) # 1000 owed
@@ -469,7 +469,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up credit card with some available credit
     credit_card.update!(debits: 2000, credits: 3000) # 1000 owed, 2000 available
@@ -487,7 +487,7 @@ test "post! should be transactional" do
 
   test "validation should not affect non-credit-card accounts" do
     vendor_account = accounts(:expense_account)
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # This should be valid even if it creates negative balance for vendor
     transfer = Transfer.new(
@@ -870,7 +870,7 @@ test "post! should be transactional" do
   end
 
   test "should prevent posting transfer with non-existent debit account" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     transfer = Transfer.new(
       state: :pending,
@@ -900,7 +900,7 @@ test "post! should be transactional" do
   end
 
   test "should prevent posting transfer with deleted accounts" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     vendor_account = accounts(:expense_account)
 
     # Create transfer
@@ -922,7 +922,7 @@ test "post! should be transactional" do
   end
 
   test "should handle database constraint violations during posting" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     vendor_account = accounts(:extra_vendor)
 
     transfer = Transfer.new(
@@ -947,7 +947,7 @@ test "post! should be transactional" do
   end
 
   test "should be transactional during posting - validation failure prevents account updates" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     vendor_account = accounts(:extra_vendor)
 
     transfer = Transfer.new(
@@ -1043,7 +1043,7 @@ test "post! should be transactional" do
   end
 
   test "should prevent posting transfers with negative amounts" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     vendor_account = accounts(:expense_account)
 
     # Test with negative amount
@@ -1060,7 +1060,7 @@ test "post! should be transactional" do
   end
 
   test "should prevent posting transfers with zero amount" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     vendor_account = accounts(:expense_account)
 
     # Test with zero amount
@@ -1077,7 +1077,7 @@ test "post! should be transactional" do
   end
 
   test "should prevent nil amount transfers" do
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     vendor_account = accounts(:expense_account)
 
     # Test with nil amount
@@ -1569,7 +1569,7 @@ test "post! should be transactional" do
 
   test "should allow vendor account transfers to create negative balance" do
     vendor_account = accounts(:extra_vendor) # 0 balance
-    cash_account = accounts(:lazaro_cash) # Assume sufficient balance
+    cash_account = accounts(:lazaro_checking) # Assume sufficient balance
 
     # Set up cash account with sufficient balance
     cash_account.update!(debits: 1000, credits: 100) # $9.00 balance
@@ -1605,7 +1605,7 @@ test "post! should be transactional" do
       organization: organizations(:lazaro_personal)
     )
 
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     cash_account.update!(debits: 2000, credits: 500) # $15.00 balance
 
     initial_vendor_balance = vendor_account.debits - vendor_account.credits
@@ -1641,7 +1641,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up credit card with some charges (credits > debits = amount owed)
     credit_card.update!(debits: 2.00, credits: 10.00) # $8.00 owed
@@ -1671,7 +1671,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     cash_account.update!(debits: 2000, credits: 500) # $15.00 balance
 
     # Set up credit card with charges
@@ -1708,7 +1708,7 @@ test "post! should be transactional" do
       kind: "Account::CreditCard",
       metadata: { due_day: 15, statement_day: 1, credit_limit: 5000 }
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up credit card with some available credit
     credit_card.update!(debits: 2.00, credits: 5.00) # $3.00 owed, $2.00 available
@@ -1747,7 +1747,7 @@ test "post! should be transactional" do
       metadata: {},
       active: true
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Set up customer with some credit balance (customer paid in advance)
     customer_account.update!(debits: 0, credits: 5.00) # $5.00 credit
@@ -1784,7 +1784,7 @@ test "post! should be transactional" do
       metadata: {},
       active: true
     )
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
     cash_account.update!(debits: 2000, credits: 500) # $15.00 balance
 
     # Set up customer with credit balance

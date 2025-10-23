@@ -1,10 +1,20 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 # === Cash Account Fixtures ===
-# Lazaro Nixon's cash account
-lazaro_cash:
+# Lazaro Nixon's checking account
+lazaro_checking:
   kind: Account::Cash
-  name: "Lazaro's Cash Account"
+  name: "Checking"
+  active: true
+  debits: 0
+  credits: 0
+  metadata: {}
+  organization: lazaro_personal
+
+# Lazaro Nixon's savings account
+lazaro_savings:
+  kind: Account::Cash
+  name: "Savings"
   active: true
   debits: 0
   credits: 0

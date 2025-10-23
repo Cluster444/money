@@ -77,7 +77,7 @@ class ScheduleTest < ActiveSupport::TestCase
 
   test "should belong to credit_account" do
     assert_respond_to @schedule, :credit_account
-    assert_equal accounts(:lazaro_cash), @schedule.credit_account
+    assert_equal accounts(:lazaro_checking), @schedule.credit_account
   end
 
   test "should have many transfers" do
@@ -115,7 +115,7 @@ class ScheduleTest < ActiveSupport::TestCase
     assert_equal 6.months.from_now.to_date, @schedule.ends_on
     assert_nil @schedule.last_materialized_on
     assert_equal accounts(:revenue_account), @schedule.debit_account
-    assert_equal accounts(:lazaro_cash), @schedule.credit_account
+    assert_equal accounts(:lazaro_checking), @schedule.credit_account
   end
 
   # Additional tests
@@ -409,8 +409,8 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: nil,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
-      relative_account: accounts(:lazaro_cash)  # Zero balance
+      credit_account: accounts(:lazaro_checking),
+      relative_account: accounts(:lazaro_checking)  # Zero balance
     )
 
     dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
@@ -425,7 +425,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: nil,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -443,8 +443,8 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: 500,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
-      relative_account: accounts(:lazaro_cash)  # Zero balance
+      credit_account: accounts(:lazaro_checking),
+      relative_account: accounts(:lazaro_checking)  # Zero balance
     )
 
     dates = [ Date.current, Date.current + 1.week, Date.current + 2.weeks ]
@@ -462,7 +462,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: 500,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -481,7 +481,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: 300,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: nil
     )
 
@@ -500,7 +500,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: nil,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)
     )
 
@@ -518,7 +518,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: nil,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: mock_account
     )
 
@@ -537,8 +537,8 @@ test "create_pending_transfers handles edge cases gracefully" do
       amount: nil,
       starts_on: Date.current,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
-      relative_account: accounts(:lazaro_cash)  # Zero balance
+      credit_account: accounts(:lazaro_checking),
+      relative_account: accounts(:lazaro_checking)  # Zero balance
     )
 
     dates = schedule.transfer_dates(Date.current + 1.month)
@@ -553,7 +553,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -571,7 +571,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       starts_on: future_date,
       period: nil,  # One-time schedule
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -587,7 +587,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       starts_on: 1.week.ago.to_date,
       period: nil,  # One-time schedule
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -603,7 +603,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)
     )
 
@@ -622,7 +622,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: nil
     )
 
@@ -643,7 +643,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       frequency: 1,
       ends_on: end_date,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)
     )
 
@@ -660,7 +660,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)
     )
 
@@ -719,8 +719,8 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
-      relative_account: accounts(:lazaro_cash)  # Zero balance
+      credit_account: accounts(:lazaro_checking),
+      relative_account: accounts(:lazaro_checking)  # Zero balance
     )
 
     # transfer_dates should return empty array
@@ -740,7 +740,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -763,7 +763,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -788,7 +788,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       starts_on: future_date,
       period: nil,  # One-time
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)  # Balance: 800
     )
 
@@ -813,7 +813,7 @@ test "create_pending_transfers handles edge cases gracefully" do
       period: "week",
       frequency: 1,
       debit_account: accounts(:expense_account),
-      credit_account: accounts(:lazaro_cash),
+      credit_account: accounts(:lazaro_checking),
       relative_account: accounts(:cash_with_balance)
     )
 

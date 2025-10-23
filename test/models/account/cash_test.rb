@@ -2,7 +2,7 @@ require "test_helper"
 
 class Account::CashTest < ActiveSupport::TestCase
   setup do
-    @account = accounts(:lazaro_cash)
+    @account = accounts(:lazaro_checking)
   end
 
   test "should be valid with required attributes" do

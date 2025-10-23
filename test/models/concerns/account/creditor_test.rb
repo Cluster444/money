@@ -49,7 +49,7 @@ class Account::CreditorTest < ActiveSupport::TestCase
 # Pending balance tests for creditor behavior
 test "should calculate pending balance as pending_credits minus pending_debits" do
     # Create pending transfers for testing
-    cash_account = accounts(:lazaro_cash)
+    cash_account = accounts(:lazaro_checking)
 
     # Create a pending transfer from cash to credit card (credit card gets credit)
     pending_transfer = Transfer.create!(

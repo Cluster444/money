@@ -24,7 +24,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
       post organization_transfers_url(@organization), params: {
         transfer: {
           amount: "50.00",
-          debit_account_id: accounts(:lazaro_cash).id,
+          debit_account_id: accounts(:lazaro_checking).id,
           credit_account_id: accounts(:expense_account).id,
           status: "pending"
         }
@@ -44,7 +44,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
       post organization_transfers_url(@organization), params: {
         transfer: {
           amount: "50.00",
-          debit_account_id: accounts(:lazaro_cash).id,
+          debit_account_id: accounts(:lazaro_checking).id,
           credit_account_id: accounts(:expense_account).id,
           status: "posted"
         }
@@ -73,7 +73,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     patch organization_transfer_url(@organization, @transfer), params: {
       transfer: {
         amount: "60.00",
-        debit_account_id: accounts(:lazaro_cash).id,
+        debit_account_id: accounts(:lazaro_checking).id,
         credit_account_id: accounts(:expense_account).id
       }
     }
@@ -102,7 +102,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
       post organization_transfers_url(@organization), params: {
         transfer: {
           amount: "123.45",
-          debit_account_id: accounts(:lazaro_cash).id,
+          debit_account_id: accounts(:lazaro_checking).id,
           credit_account_id: accounts(:expense_account).id,
           status: "pending"
         }
@@ -116,7 +116,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create posted transfer and update account balances" do
-    to_account = accounts(:lazaro_cash)      # Money goes TO this account (debit_account)
+    to_account = accounts(:lazaro_checking)      # Money goes TO this account (debit_account)
     from_account = accounts(:expense_account) # Money comes FROM this account (credit_account)
 
     # Store initial balances

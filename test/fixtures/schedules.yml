@@ -9,7 +9,7 @@ monthly_schedule:
   starts_on: <%= 2.weeks.ago.to_date %>
   ends_on: <%= 6.months.from_now.to_date %>
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: revenue_account
   relative_account:
 
@@ -22,7 +22,7 @@ future_single_date:
   starts_on: <%= 2.weeks.from_now.to_date %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
   relative_account:
 
@@ -37,7 +37,7 @@ large_payment_schedule:
   starts_on: <%= 5.days.from_now.to_date %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
   relative_account:
 
@@ -50,7 +50,7 @@ today_payment_schedule:
   starts_on: <%= Date.today %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
   relative_account:
 
@@ -63,7 +63,7 @@ credit_card_payment_schedule:
   starts_on: <%= (Date.today.end_of_month - 1.day).to_date %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: lazaro_credit_card
   relative_account: lazaro_credit_card
 
@@ -76,7 +76,7 @@ past_no_dates:
   starts_on: <%= 2.weeks.ago.to_date %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
 
 # Weekly schedule with period, no end date
@@ -88,7 +88,7 @@ weekly_schedule:
   starts_on: <%= 3.weeks.ago.to_date %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
 
 # Monthly schedule with ends_on, testing date before ends_on
@@ -100,7 +100,7 @@ monthly_with_end_before:
   starts_on: <%= 2.months.ago.to_date %>
   ends_on: <%= 2.months.from_now.to_date %>
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: revenue_account
 
 # Monthly schedule with ends_on, testing date after ends_on
@@ -112,7 +112,7 @@ monthly_with_end_after:
   starts_on: <%= 3.months.ago.to_date %>
   ends_on: <%= 1.week.ago.to_date %>
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
 
 # Daily schedule that should generate a transfer for today
@@ -124,7 +124,7 @@ daily_schedule_for_today:
   starts_on: <%= 3.days.ago.to_date %>
   ends_on: <%= 1.week.from_now.to_date %>
   last_materialized_on: <%= 1.day.ago.to_date %>
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: revenue_account
 
 # Large payment schedule for testing negative balance scenarios
@@ -136,7 +136,7 @@ large_payment_schedule:
   starts_on: <%= 5.days.from_now.to_date %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
 
 # Small daily schedule for testing same-day scenarios
@@ -148,7 +148,7 @@ today_payment_schedule:
   starts_on: <%= Date.today %>
   ends_on:
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account
 
 # Weekly schedule for testing weekly calculations
@@ -160,5 +160,5 @@ weekly_payment_schedule:
   starts_on: <%= Date.today %>
   ends_on: <%= 2.weeks.from_now.to_date %>
   last_materialized_on:
-  credit_account: lazaro_cash
+  credit_account: lazaro_checking
   debit_account: expense_account

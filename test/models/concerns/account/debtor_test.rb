@@ -2,7 +2,7 @@ require "test_helper"
 
 class Account::DebtorTest < ActiveSupport::TestCase
   setup do
-    @cash = accounts(:lazaro_cash)
+    @cash = accounts(:lazaro_checking)
     @vendor = accounts(:lazaro_vendor)
   end
 
