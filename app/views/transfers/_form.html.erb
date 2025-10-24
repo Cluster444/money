@@ -17,15 +17,15 @@
     </div>
 
     <div class="form__group">
-      <%= form.label :debit_account_id, "From Account", class: "form__label" %>
-      <%= form.collection_select :debit_account_id, @accounts, :id, :name, 
+      <%= form.label :credit_account_id, "From Account", class: "form__label" %>
+      <%= form.collection_select :credit_account_id, @accounts, :id, :name, 
           { prompt: "Select account" }, 
           { class: "form__select" } %>
     </div>
 
     <div class="form__group">
-      <%= form.label :credit_account_id, "To Account", class: "form__label" %>
-      <%= form.collection_select :credit_account_id, @accounts, :id, :name, 
+      <%= form.label :debit_account_id, "To Account", class: "form__label" %>
+      <%= form.collection_select :debit_account_id, @accounts, :id, :name, 
           { prompt: "Select account" }, 
           { class: "form__select" } %>
     </div>

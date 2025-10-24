@@ -10,7 +10,7 @@
         <h2 class="page__section-header">Pending Transfers</h2>
         <% @pending_transfers.each do |transfer| %>
           <%= link_to organization_transfer_path(current_organization, transfer), class: "transfers-index__link" do %>
-            <div class="transfers-index__card transfers-index__card--pending">
+            <div class="page__card transfers-index__card--pending">
               <div class="transfers-index__card-header">
                 <h3 class="transfers-index__card-amount"><%= number_to_currency(transfer.amount ) %></h3>
                 <span class="transfers-index__card-state transfers-index__card-state--pending">Pending</span>
@@ -40,7 +40,7 @@
         <h2 class="page__section-header">Posted Transfers</h2>
         <% @posted_transfers.each do |transfer| %>
           <%= link_to organization_transfer_path(current_organization, transfer), class: "transfers-index__link" do %>
-            <div class="transfers-index__card transfers-index__card--posted">
+            <div class="page__card transfers-index__card--posted">
               <div class="transfers-index__card-header">
                 <h3 class="transfers-index__card-amount"><%= number_to_currency(transfer.amount ) %></h3>
                 <span class="transfers-index__card-state transfers-index__card-state--posted">Posted</span>

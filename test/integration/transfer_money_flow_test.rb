@@ -28,14 +28,14 @@ class TransferMoneyFlowTest < ActionDispatch::IntegrationTest
       assert_select "a[href*='credit_account_id=#{@checking_account.id}']", text: "Out"
     end
 
-    # Click on the Out button
+    # Click on the Out button (money going OUT of checking, so checking should be FROM account)
     get new_organization_transfer_path(@user.organizations.first, credit_account_id: @checking_account.id)
     assert_response :success
 
-    # Assert that the Credit account is selected and is the name of the account we clicked on
+    # Assert that the Credit account (FROM account) is selected and is the name of the account we clicked on
     assert_select "select#transfer_credit_account_id option[selected][value='#{@checking_account.id}']"
 
-    # Assert that the Debit account is not selected
+    # Assert that the Debit account (TO account) is not selected
     assert_select "select#transfer_debit_account_id option[selected]", count: 0
 
     # Enter an amount, set the debit account to the Savings cash account, and select posted in the state

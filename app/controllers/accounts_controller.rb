@@ -31,6 +31,7 @@ class AccountsController < ApplicationController
     @account = @accounts.find(params[:id])
     @debit_schedules = @account.debit_schedules.order(:name)
     @credit_schedules = @account.credit_schedules.order(:name)
+    @transfers = @account.transfers.includes(:debit_account, :credit_account, :schedule).order(pending_on: :desc, posted_on: :desc, created_at: :desc)
   end
 
   def edit

@@ -14,19 +14,7 @@
   display: block;
 }
 
-.accounts-index__card {
-  background: var(--bg-3);
-  border: 1px solid var(--border-1);
-  border-radius: 8px;
-  padding: 0.5rem;
-  transition: all 0.2s ease;
-  width: 100%;
-}
 
-.accounts-index__card:hover {
-  border-color: var(--border-2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 
 .accounts-index__actions {
   display: flex;
@@ -506,6 +494,107 @@
 }
 
 .accounts-show__schedule-value {
+  color: var(--font-1);
+  font-weight: 400;
+}
+
+/* Transfer cards for accounts show page */
+.accounts-show__transfer-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border-1);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.accounts-show__transfer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.accounts-show__transfer-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--font-1);
+}
+
+.accounts-show__transfer-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.accounts-show__transfer-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.accounts-show__transfer-status.posted {
+  background-color: #e8f5e8;
+  color: #2d5a2d;
+}
+
+.accounts-show__transfer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.accounts-show__transfer-accounts {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.accounts-show__transfer-direction {
+  color: var(--font-2);
+  font-weight: 500;
+}
+
+.accounts-show__transfer-account {
+  color: var(--font-1);
+  font-weight: 400;
+}
+
+.accounts-show__transfer-dates {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.accounts-show__transfer-date {
+  font-size: 0.85rem;
+}
+
+.accounts-show__transfer-date-label {
+  color: var(--font-2);
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.accounts-show__transfer-date-value {
+  color: var(--font-1);
+  font-weight: 400;
+}
+
+.accounts-show__transfer-schedule {
+  font-size: 0.85rem;
+}
+
+.accounts-show__transfer-schedule-label {
+  color: var(--font-2);
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.accounts-show__transfer-schedule-name {
   color: var(--font-1);
   font-weight: 400;
 }

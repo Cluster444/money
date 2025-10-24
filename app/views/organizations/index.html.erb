@@ -8,7 +8,7 @@
     <div class="page__list">
       <% @organizations.each do |organization| %>
         <%= link_to organization_accounts_path(organization), class: "organizations-index__link" do %>
-          <div class="organizations-index__card">
+          <div class="page__card">
             <div class="organizations-index__card-header">
               <h3 class="organizations-index__card-name"><%= organization.name %></h3>
             </div>

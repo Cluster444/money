@@ -27,8 +27,8 @@
         <div class="transfer-show__detail">
           <span class="transfer-show__label">From Account:</span>
           <span class="transfer-show__value">
-            <%= link_to @transfer.debit_account.name, 
-                organization_account_path(current_organization, @transfer.debit_account),
+            <%= link_to @transfer.credit_account.name, 
+                organization_account_path(current_organization, @transfer.credit_account),
                 class: "transfer-show__account-link" %>
           </span>
         </div>
@@ -36,8 +36,8 @@
         <div class="transfer-show__detail">
           <span class="transfer-show__label">To Account:</span>
           <span class="transfer-show__value">
-            <%= link_to @transfer.credit_account.name, 
-                organization_account_path(current_organization, @transfer.credit_account),
+            <%= link_to @transfer.debit_account.name, 
+                organization_account_path(current_organization, @transfer.debit_account),
                 class: "transfer-show__account-link" %>
           </span>
         </div>

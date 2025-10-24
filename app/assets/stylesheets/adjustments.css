@@ -11,20 +11,7 @@
   align-items: center;
 }
 
-.adjustments-index__card {
-  background: var(--bg-3);
-  border: 1px solid var(--border-1);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 0.75rem;
-  transition: all 0.2s ease;
-  width: 100%;
-}
 
-.adjustments-index__card:hover {
-  border-color: var(--border-2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 
 .adjustments-index__card-header {
   display: flex;

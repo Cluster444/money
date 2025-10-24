@@ -9,7 +9,7 @@
     <% if @cash_accounts.any? %>
       <h2 class="page__section-header">Cash</h2>
       <% @cash_accounts.each do |account| %>
-        <div class="accounts-index__card" id="<%= dom_id(account) %>">
+        <div class="page__card" id="<%= dom_id(account) %>">
           <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
             <div class="accounts-index__card-header">
               <h3 class="accounts-index__card-name"><%= account.name %></h3>
@@ -40,7 +40,7 @@
     <% if @credit_card_accounts.any? %>
       <h2 class="page__section-header">Credit Cards</h2>
       <% @credit_card_accounts.each do |account| %>
-        <div class="accounts-index__card" id="<%= dom_id(account) %>">
+        <div class="page__card" id="<%= dom_id(account) %>">
           <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
             <div class="accounts-index__card-header">
               <h3 class="accounts-index__card-name"><%= account.name %></h3>
@@ -71,7 +71,7 @@
      <% if @vendor_accounts.any? %>
        <h2 class="page__section-header">Vendors</h2>
        <% @vendor_accounts.each do |account| %>
-         <div class="accounts-index__card" id="<%= dom_id(account) %>">
+         <div class="page__card" id="<%= dom_id(account) %>">
            <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
              <div class="accounts-index__card-header">
                <h3 class="accounts-index__card-name"><%= account.name %></h3>
@@ -102,7 +102,7 @@
      <% if @customer_accounts.any? %>
        <h2 class="page__section-header">Customers</h2>
        <% @customer_accounts.each do |account| %>
-         <div class="accounts-index__card" id="<%= dom_id(account) %>">
+         <div class="page__card" id="<%= dom_id(account) %>">
            <%= link_to organization_account_path(current_organization, account), class: "accounts-index__link" do %>
              <div class="accounts-index__card-header">
                <h3 class="accounts-index__card-name"><%= account.name %></h3>
