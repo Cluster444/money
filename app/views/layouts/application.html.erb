@@ -11,36 +11,38 @@
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%# = tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-
-  <body>
-    <header class="app-header">
-      <div class="app-header__content">
-        <div class="app-header__left">
-          <%= link_to "MONEY", root_path, class: "app-header__brand" %>
+  <body class="bg-stone-950 text-white overflow-hidden">
+    <header class="bg-stone-950">
+      <div class="flex items-center justify-between h-12 max-w-320 mx-auto px-2">
+        <div class="flex items-center">
+          <%= link_to "MONEY", root_path, class: "text-2xl font-bold tracking-widest mr-8" %>
           <% if request.path.match?(/^\/organizations\/\d+\//) %>
-            <div class="app-header__switchers">
-              <%= render "widgets/org_switcher" %>
-              <div class="spacing-md"></div>
-              <%= render "widgets/view_switcher" %>
+            <div class="flex items-center gap-8">
+              <%= render Components::OrgSwitcher.new(current_organization:, other_organizations:) %>
+              <%= render Components::ViewSwitcher.new(current_organization:, current_view:) %>
             </div>
           <% end %>
         </div>
         <% if Current.user %>
-          <%= link_to "Sign Out", session_path, data: { turbo_method: :delete }, class: "btn btn--secondary" %>
+          <%= link_to "Sign Out",
+          session_path,
+          data: {
+            turbo_method: :delete,
+          },
+          class: "btn btn--secondary" %>
         <% end %>
       </div>
     </header>
-    <main class="container">
+    <main class="max-w-320 h-[calc(100vh - 65px)] mx-auto p-8 bg-stone-900">
       <%= yield %>
     </main>
   </body>

@@ -100,11 +100,21 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm-linux-gnu)
+    ffi (1.17.2-arm-linux-musl)
+    ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
+    hotwire-spark (0.1.13)
+      listen
+      rails (>= 7.0.0)
+      zeitwerk
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.2.2)
@@ -133,12 +143,16 @@ GEM
       zeitwerk (>= 2.6.18, < 3.0)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
+    listen (3.9.0)
+      rb-fsevent (~> 0.10, >= 0.10.3)
+      rb-inotify (~> 0.9, >= 0.9.10)
     localhost (1.6.0)
     logger (1.7.0)
     loofah (2.24.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    mail (2.8.1)
+    mail (2.9.0)
+      logger
       mini_mime (>= 0.1.1)
       net-imap
       net-pop
@@ -179,6 +193,12 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    phlex (2.3.1)
+      zeitwerk (~> 2.7)
+    phlex-rails (2.3.1)
+      phlex (~> 2.3.0)
+      railties (>= 7.1, < 9)
+      zeitwerk (~> 2.7)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -234,6 +254,9 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.0)
+    rb-fsevent (0.11.2)
+    rb-inotify (0.11.1)
+      ffi (~> 1.0)
     rdoc (6.15.0)
       erb
       psych (>= 4.0.0)
@@ -303,6 +326,14 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.7)
+    tailwindcss-rails (4.3.0)
+      railties (>= 7.0.0)
+      tailwindcss-ruby (~> 4.0)
+    tailwindcss-ruby (4.1.13)
+    tailwindcss-ruby (4.1.13-aarch64-linux-gnu)
+    tailwindcss-ruby (4.1.13-aarch64-linux-musl)
+    tailwindcss-ruby (4.1.13-x86_64-linux-gnu)
+    tailwindcss-ruby (4.1.13-x86_64-linux-musl)
     thor (1.4.0)
     thruster (0.1.16)
     thruster (0.1.16-aarch64-linux)
@@ -341,25 +372,29 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  bcrypt (~> 3.1.7)
+  bcrypt (= 3.1.20)
   bootsnap
   brakeman
   debug
-  importmap-rails
-  jbuilder
+  hotwire-spark
+  importmap-rails (= 2.2.2)
+  jbuilder (= 2.14.1)
   kamal
   localhost
-  propshaft
-  puma (>= 5.0)
-  rails (~> 8.1.0)
+  phlex-rails (= 2.3.1)
+  propshaft (= 1.3.1)
+  puma (= 7.1.0)
+  rails (= 8.1.0)
   rubocop-rails-omakase
-  solid_cable
-  solid_cache
-  solid_queue
-  sqlite3 (>= 2.1)
-  stimulus-rails
+  solid_cable (= 3.0.12)
+  solid_cache (= 1.0.8)
+  solid_queue (= 1.2.2)
+  sqlite3 (= 2.7.4)
+  stimulus-rails (= 1.3.4)
+  tailwindcss-rails (= 4.3.0)
+  tailwindcss-ruby (= 4.1.13)
   thruster
-  turbo-rails
+  turbo-rails (= 2.0.17)
   tzinfo-data
   web-console
 

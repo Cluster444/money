@@ -19,7 +19,7 @@ export default class extends Controller {
   }
 
   toggle() {
-    const isOpen = this.dropdownTarget.classList.contains('org-switcher__dropdown--open')
+    const isOpen = this.dropdownTarget.hasAttribute('data-open')
     
     if (isOpen) {
       this.close()
@@ -29,24 +29,18 @@ export default class extends Controller {
   }
 
   open() {
-    this.dropdownTarget.classList.add('org-switcher__dropdown--open')
+    this.dropdownTarget.setAttribute('data-open', 'true')
     this.buttonTarget.setAttribute('aria-expanded', 'true')
     this.chevronTarget.style.transform = 'rotate(180deg)'
   }
 
   close() {
-    this.dropdownTarget.classList.remove('org-switcher__dropdown--open')
+    this.dropdownTarget.removeAttribute('data-open')
     this.buttonTarget.setAttribute('aria-expanded', 'false')
     this.chevronTarget.style.transform = 'rotate(0deg)'
   }
 
-  select(event) {
-    event.preventDefault()
-    const organizationId = event.currentTarget.dataset.orgId
-    if (organizationId) {
-      Turbo.visit(`/organizations/${organizationId}/accounts`)
-    }
-  }
+
 
   handleClickOutside(event) {
     if (!this.element.contains(event.target)) {

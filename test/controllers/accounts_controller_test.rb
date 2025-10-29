@@ -84,7 +84,7 @@ test "should render all expected accounts with dom_ids" do
     end
 
     # Verify the total number of account cards matches
-    assert_select "div.accounts-index__card", expected_accounts.count
+    assert_select "div.page__card", expected_accounts.count
   end
 
 test "should render all expected accounts by type with dom_ids" do
@@ -119,7 +119,7 @@ test "should render all expected accounts by type with dom_ids" do
 
     # Verify total count
     total_expected = cash_accounts.count + credit_card_accounts.count + vendor_accounts.count + customer_accounts.count
-    assert_select "div.accounts-index__card", total_expected
+    assert_select "div.page__card", total_expected
   end
 
 
