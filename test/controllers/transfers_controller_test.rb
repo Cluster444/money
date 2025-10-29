@@ -26,6 +26,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
           amount: "50.00",
           debit_account_id: accounts(:lazaro_checking).id,
           credit_account_id: accounts(:expense_account).id,
+          pending_on: Date.current,
           status: "pending"
         }
       }
@@ -46,6 +47,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
           amount: "50.00",
           debit_account_id: accounts(:lazaro_checking).id,
           credit_account_id: accounts(:expense_account).id,
+          pending_on: Date.current,
           status: "posted"
         }
       }
@@ -74,7 +76,8 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
       transfer: {
         amount: "60.00",
         debit_account_id: accounts(:lazaro_checking).id,
-        credit_account_id: accounts(:expense_account).id
+        credit_account_id: accounts(:expense_account).id,
+        pending_on: @transfer.pending_on
       }
     }
     assert_redirected_to organization_transfer_url(@organization, @transfer)
@@ -104,6 +107,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
           amount: "123.45",
           debit_account_id: accounts(:lazaro_checking).id,
           credit_account_id: accounts(:expense_account).id,
+          pending_on: Date.current,
           status: "pending"
         }
       }
@@ -129,6 +133,7 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
           amount: "75.00",
           debit_account_id: to_account.id,     # TO account gets debited
           credit_account_id: from_account.id,  # FROM account gets credited
+          pending_on: Date.current,
           status: "posted"
         }
       }

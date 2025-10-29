@@ -45,6 +45,7 @@ class TransferMoneyFlowTest < ActionDispatch::IntegrationTest
         amount: transfer_amount,
         credit_account_id: @checking_account.id,
         debit_account_id: @savings_account.id,
+        pending_on: Date.current,
         status: "posted"
       }
     }

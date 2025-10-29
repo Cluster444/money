@@ -27,11 +27,9 @@ def create
 
     # Set dates based on status selection
     if params[:transfer][:status] == "posted"
-      @transfer.pending_on = Date.current
-      @transfer.posted_on = Date.current
+      @transfer.posted_on = @transfer.pending_on
       @transfer.state = "posted"
     else
-      @transfer.pending_on = Date.current
       @transfer.state = "pending"
     end
 
@@ -54,6 +52,15 @@ def create
   def update
     @transfer = @transfers.find(params[:id])
     @accounts = current_organization.accounts
+
+    # Set dates based on status selection
+    if params[:transfer][:status] == "posted"
+      @transfer.posted_on = @transfer.pending_on
+      @transfer.state = "posted"
+    else
+      @transfer.state = "pending"
+      @transfer.posted_on = nil
+    end
 
     if @transfer.update(transfer_params)
       redirect_to organization_transfer_path(current_organization, @transfer), notice: "Transfer was successfully updated."
@@ -81,6 +88,6 @@ def create
   private
 
   def transfer_params
-    params.expect(transfer: [ :amount, :debit_account_id, :credit_account_id ])
+    params.expect(transfer: [ :amount, :debit_account_id, :credit_account_id, :pending_on ])
   end
 end
