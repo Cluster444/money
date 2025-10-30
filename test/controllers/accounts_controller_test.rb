@@ -399,12 +399,15 @@ test "should get edit" do
       assert_select ".accounts-show__metadata-value", "$5,000"
     end
 
-    # Check that debit schedules section is present (credit card payment schedule)
-    assert_select "h2", "Debit Schedules"
-    assert_select ".accounts-show__schedule-card" do
-      assert_select ".accounts-show__schedule-name", "Payment for Lazaro's Credit Card"
-      # Schedule should have no amount displayed (amount is nil)
-      assert_select ".accounts-show__schedule-amount", count: 0
+    # Check that schedules tab is present and contains debit schedules
+    assert_select ".tab-panel__button", "Schedules"
+    assert_select ".tab-panel__content" do
+      assert_select "h2", "Debit Schedules"
+      assert_select ".accounts-show__schedule-card" do
+        assert_select ".accounts-show__schedule-name", "Payment for Lazaro's Credit Card"
+        # Schedule should have no amount displayed (amount is nil)
+        assert_select ".accounts-show__schedule-amount", count: 0
+      end
     end
   end
 

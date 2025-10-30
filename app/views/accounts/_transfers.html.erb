@@ -1,0 +1,45 @@
+<div class="page__card">
+  <div class="page__list">
+    <% @transfers.each do |transfer| %>
+      <div class="accounts-show__transfer-card">
+        <div class="accounts-show__transfer-header">
+          <div class="accounts-show__transfer-amount">
+            <%= number_to_currency(transfer.amount) %>
+          </div>
+          <div class="accounts-show__transfer-status <%= transfer.state %>">
+            <%= transfer.state.humanize %>
+          </div>
+        </div>
+        <div class="accounts-show__transfer-details">
+          <div class="accounts-show__transfer-accounts">
+            <% if transfer.debit_account == @account %>
+              <span class="accounts-show__transfer-direction">From:</span>
+              <span class="accounts-show__transfer-account"><%= transfer.credit_account.name %></span>
+            <% else %>
+              <span class="accounts-show__transfer-direction">To:</span>
+              <span class="accounts-show__transfer-account"><%= transfer.debit_account.name %></span>
+            <% end %>
+          </div>
+          <div class="accounts-show__transfer-dates">
+            <div class="accounts-show__transfer-date">
+              <span class="accounts-show__transfer-date-label">
+                <%= transfer.pending? ? "Pending:" : "Posted:" %>
+              </span>
+              <span class="accounts-show__transfer-date-value">
+                <%= (transfer.pending? ? transfer.pending_on : transfer.posted_on).strftime(
+                  "%b %-d, %Y",
+                ) %>
+              </span>
+            </div>
+            <% if transfer.schedule.present? %>
+              <div class="accounts-show__transfer-schedule">
+                <span class="accounts-show__transfer-schedule-label">Schedule:</span>
+                <span class="accounts-show__transfer-schedule-name"><%= transfer.schedule.name %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

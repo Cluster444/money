@@ -1,0 +1,51 @@
+<div class="page__card">
+  <div class="page__list">
+    <% schedules.each do |schedule| %>
+      <div class="accounts-show__schedule-card">
+        <div class="accounts-show__schedule-header">
+          <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
+          <% if schedule.amount.present? && schedule.period.present? %>
+            <span class="accounts-show__schedule-amount-frequency">
+              <% if schedule.frequency > 1 %>
+                <%= number_to_currency(schedule.amount) %>/<%= schedule.frequency %>
+                <%= schedule.period.humanize.pluralize(schedule.frequency) %>
+              <% else %>
+                <%= number_to_currency(schedule.amount) %>/<%= schedule.period.humanize %>
+              <% end %>
+            </span>
+          <% end %>
+        </div>
+        <div class="accounts-show__schedule-details">
+          <div class="accounts-show__schedule-row">
+            <div>
+              <div class="accounts-show__schedule-detail">
+                <span class="accounts-show__schedule-label">From:</span>
+                <span class="accounts-show__schedule-value"><%= schedule.credit_account.name %></span>
+              </div>
+            </div>
+            <div class="accounts-show__schedule-dates">
+              <% if schedule.last_materialized_on.present? %>
+                <div class="accounts-show__schedule-detail">
+                  <span class="accounts-show__schedule-label">Last:</span>
+                  <span class="accounts-show__schedule-value"><%= schedule.last_materialized_on.strftime("%b %-d") %></span>
+                </div>
+              <% end %>
+              <% if schedule.next_materialized_on.present? %>
+                <div class="accounts-show__schedule-detail">
+                  <span class="accounts-show__schedule-label">Next:</span>
+                  <span class="accounts-show__schedule-value"><%= schedule.next_materialized_on.strftime("%b %-d") %></span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+          <% if schedule.ends_on.present? %>
+            <div class="accounts-show__schedule-detail">
+              <span class="accounts-show__schedule-label">Ends:</span>
+              <span class="accounts-show__schedule-value"><%= schedule.ends_on.strftime("%B %d, %Y") %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

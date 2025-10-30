@@ -16,17 +16,12 @@ bin/rails test test/models/user_test.rb -n test_should_be_valid
 bin/rails test:system
 # Run linting
 bin/rubocop
-# Run security scan
-bin/brakeman
-# Check JavaScript dependencies
-bin/importmap audit
-# Setup database
-bin/rails db:setup
-# Start development server
-bin/dev
+# Run all of the CI checks
+bin/ci
 # Run Ruby code in Rails context (for debugging)
 bin/rails runner "puts User.count"
 # Avoid using bin/rails console - it's meant for interactive REPL only
+# Avoid using bin/rails server - there is a server running on 192.168.0.2:3000 in development
 ```
 
 ## Code Style Guidelines

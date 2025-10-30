@@ -82,161 +82,17 @@
       <% end %>
     </div>
 
-    <% if @debit_schedules.any? %>
-      <div class="page__card">
-        <h2>Debit Schedules</h2>
-        <div class="page__list">
-          <% @debit_schedules.each do |schedule| %>
-            <div class="accounts-show__schedule-card">
-              <div class="accounts-show__schedule-header">
-                <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
-                <% if schedule.amount.present? && schedule.period.present? %>
-                  <span class="accounts-show__schedule-amount-frequency">
-                    <% if schedule.frequency > 1 %>
-                      <%= number_to_currency(schedule.amount) %>/<%= schedule.frequency %>
-                      <%= schedule.period.humanize.pluralize(schedule.frequency) %>
-                    <% else %>
-                      <%= number_to_currency(schedule.amount) %>/<%= schedule.period.humanize %>
-                    <% end %>
-                  </span>
-                <% end %>
-              </div>
-              <div class="accounts-show__schedule-details">
-                <div class="accounts-show__schedule-row">
-                  <div>
-                    <div class="accounts-show__schedule-detail">
-                      <span class="accounts-show__schedule-label">From:</span>
-                      <span class="accounts-show__schedule-value"><%= schedule.credit_account.name %></span>
-                    </div>
-                  </div>
-                  <div class="accounts-show__schedule-dates">
-                    <% if schedule.last_materialized_on.present? %>
-                      <div class="accounts-show__schedule-detail">
-                        <span class="accounts-show__schedule-label">Last:</span>
-                        <span class="accounts-show__schedule-value"><%= schedule.last_materialized_on.strftime("%b %-d") %></span>
-                      </div>
-                    <% end %>
-                    <% if schedule.next_materialized_on.present? %>
-                      <div class="accounts-show__schedule-detail">
-                        <span class="accounts-show__schedule-label">Next:</span>
-                        <span class="accounts-show__schedule-value"><%= schedule.next_materialized_on.strftime("%b %-d") %></span>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-                <% if schedule.ends_on.present? %>
-                  <div class="accounts-show__schedule-detail">
-                    <span class="accounts-show__schedule-label">Ends:</span>
-                    <span class="accounts-show__schedule-value"><%= schedule.ends_on.strftime("%B %d, %Y") %></span>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <% if @credit_schedules.any? %>
-      <div class="page__card">
-        <h2>Credit Schedules</h2>
-        <div class="page__list">
-          <% @credit_schedules.each do |schedule| %>
-            <div class="accounts-show__schedule-card">
-              <div class="accounts-show__schedule-header">
-                <h3 class="accounts-show__schedule-name"><%= schedule.name %></h3>
-                <% if schedule.amount.present? && schedule.period.present? %>
-                  <span class="accounts-show__schedule-amount-frequency">
-                    <% if schedule.frequency > 1 %>
-                      <%= number_to_currency(schedule.amount) %>/<%= schedule.frequency %>
-                      <%= schedule.period.humanize.pluralize(schedule.frequency) %>
-                    <% else %>
-                      <%= number_to_currency(schedule.amount) %>/<%= schedule.period.humanize %>
-                    <% end %>
-                  </span>
-                <% end %>
-              </div>
-              <div class="accounts-show__schedule-details">
-                <div class="accounts-show__schedule-row">
-                  <div>
-                    <div class="accounts-show__schedule-detail">
-                      <span class="accounts-show__schedule-label">To:</span>
-                      <span class="accounts-show__schedule-value"><%= schedule.debit_account.name %></span>
-                    </div>
-                  </div>
-                  <div class="accounts-show__schedule-dates">
-                    <% if schedule.last_materialized_on.present? %>
-                      <div class="accounts-show__schedule-detail">
-                        <span class="accounts-show__schedule-label">Last:</span>
-                        <span class="accounts-show__schedule-value"><%= schedule.last_materialized_on.strftime("%b %-d") %></span>
-                      </div>
-                    <% end %>
-                    <% if schedule.next_materialized_on.present? %>
-                      <div class="accounts-show__schedule-detail">
-                        <span class="accounts-show__schedule-label">Next:</span>
-                        <span class="accounts-show__schedule-value"><%= schedule.next_materialized_on.strftime("%b %-d") %></span>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-                <% if schedule.ends_on.present? %>
-                  <div class="accounts-show__schedule-detail">
-                    <span class="accounts-show__schedule-label">Ends:</span>
-                    <span class="accounts-show__schedule-value"><%= schedule.ends_on.strftime("%B %d, %Y") %></span>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <% if @transfers.any? %>
-      <div class="page__card">
-        <h2>Transfers</h2>
-        <div class="page__list">
-          <% @transfers.each do |transfer| %>
-            <div class="accounts-show__transfer-card">
-              <div class="accounts-show__transfer-header">
-                <div class="accounts-show__transfer-amount">
-                  <%= number_to_currency(transfer.amount) %>
-                </div>
-                <div class="accounts-show__transfer-status <%= transfer.state %>">
-                  <%= transfer.state.humanize %>
-                </div>
-              </div>
-              <div class="accounts-show__transfer-details">
-                <div class="accounts-show__transfer-accounts">
-                  <% if transfer.debit_account == @account %>
-                    <span class="accounts-show__transfer-direction">From:</span>
-                    <span class="accounts-show__transfer-account"><%= transfer.credit_account.name %></span>
-                  <% else %>
-                    <span class="accounts-show__transfer-direction">To:</span>
-                    <span class="accounts-show__transfer-account"><%= transfer.debit_account.name %></span>
-                  <% end %>
-                </div>
-                <div class="accounts-show__transfer-dates">
-                  <div class="accounts-show__transfer-date">
-                    <span class="accounts-show__transfer-date-label">
-                      <%= transfer.pending? ? "Pending:" : "Posted:" %>
-                    </span>
-                    <span class="accounts-show__transfer-date-value">
-                      <%= (transfer.pending? ? transfer.pending_on : transfer.posted_on).strftime("%b %-d, %Y") %>
-                    </span>
-                  </div>
-                  <% if transfer.schedule.present? %>
-                    <div class="accounts-show__transfer-schedule">
-                      <span class="accounts-show__transfer-schedule-label">Schedule:</span>
-                      <span class="accounts-show__transfer-schedule-name"><%= transfer.schedule.name %></span>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
+    <%= render Components::TabPanel.new() do |tabs| %>
+      <%= tabs.tab("Debits") do %>
+        <%= render("schedules", schedules: @debit_schedules) if @debit_schedules %>
+      <% end %>
+      <%= tabs.tab("Credits") do %>
+        <%= render("schedules", schedules: @credit_schedules) if @credit_schedules %>
+      <% end %>
+      <%= tabs.tab("Transfers") do %>
+        <%= render("transfers") if @transfers %>
+      <% end %>
     <% end %>
   </div>
 </div>
+
