@@ -14,7 +14,7 @@ gem "jbuilder", "2.14.1"
 gem "bcrypt", "3.1.20"
 
 gem "solid_cache", "1.0.8"
-gem "solid_queue", "1.2.2"
+gem "solid_queue", "1.2.4"
 gem "solid_cable", "3.0.12"
 
 gem "bootsnap", require: false
