@@ -2,8 +2,13 @@
 
 /* Page containers */
 .page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 65px - 4rem);
   max-width: 50rem;
   margin: 0 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Page headers */
@@ -25,7 +30,12 @@
 
 /* Page content areas */
 .page__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
   margin-bottom: 2rem;
+  min-height: 0;
+  padding: 0 2rem;
 }
 
 /* Page cards */

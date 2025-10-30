@@ -1,5 +1,6 @@
 class OrganizationsController < ApplicationController
   def index
+    Rails.logger.info "Flash in organizations#index: #{flash.to_h}"
     @organizations = Current.user.organizations.order(:name)
   end
 

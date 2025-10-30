@@ -5,10 +5,6 @@
 
   <div class="page__content">
     <div class="page__card">
-      <% if flash[:alert] %>
-        <%= tag.div(flash[:alert], class: "flash-message flash-alert") %>
-      <% end %>
-
       <% if @user&.errors&.any? %>
         <div class="form__errors">
           <h4>Please fix the following errors:</h4>

@@ -7,6 +7,7 @@ class HomeController < ApplicationController
     elsif organizations.count == 1
       redirect_to organization_accounts_path(organizations.first)
     else
+      flash.keep(:notice)
       redirect_to organizations_path
     end
   end

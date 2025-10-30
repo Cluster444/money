@@ -5,10 +5,6 @@
 
   <div class="page__content">
     <div class="page__card">
-      <% if flash[:alert] %>
-        <%= tag.div(flash[:alert], class: "flash-message flash-alert") %>
-      <% end %>
-
       <%= form_with url: passwords_path, class: "form" do |form| %>
         <div class="form__group">
           <%= form.email_field :email_address,

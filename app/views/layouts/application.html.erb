@@ -21,6 +21,8 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="bg-stone-950 text-white overflow-hidden">
+    <%= render Components::Flash.new(messages: flash.to_h.symbolize_keys) %>
+
     <header class="bg-stone-950">
       <div class="flex items-center justify-between h-12 max-w-320 mx-auto px-2">
         <div class="flex items-center">

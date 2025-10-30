@@ -1,22 +1,6 @@
 /* Page layout structure */
-.page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 .page__header {
   flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.page__content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 /* Scrollbar styling for page content */
