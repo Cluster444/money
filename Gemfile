@@ -9,7 +9,7 @@ gem "turbo-rails", "2.0.17"
 gem "stimulus-rails", "1.3.4"
 gem "phlex-rails", "2.3.1"
 gem "tailwindcss-rails", "4.3.0"
-gem "tailwindcss-ruby", "4.1.13"
+gem "tailwindcss-ruby", "4.1.16"
 gem "jbuilder", "2.14.1"
 gem "bcrypt", "3.1.20"
 
