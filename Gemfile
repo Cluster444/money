@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "8.1.0"
+gem "rails", "8.1.1"
 gem "propshaft", "1.3.1"
 gem "sqlite3", "2.7.4"
 gem "puma", "7.1.0"
